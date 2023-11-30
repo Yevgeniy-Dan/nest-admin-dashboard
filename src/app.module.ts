@@ -7,6 +7,8 @@ import { AppService } from './app.service';
 
 import configuration from './config/configuration';
 import { Configuration } from './interfaces/configuration.interface';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { Configuration } from './interfaces/configuration.interface';
         uri: configService.get<string>('MONGODB_URI'),
       }),
     }),
+    AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
