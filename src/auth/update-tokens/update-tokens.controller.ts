@@ -14,7 +14,7 @@ import { UpdateTokensService } from './update-tokens.service';
 import { Cookies } from 'src/decorators/cookies.decorator';
 
 import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
-import { LoginResponseDto } from '../login/dtos/login-response.dto';
+import { SignInResponseDto } from '../sign-in/dtos/sign-in-response.dto';
 
 @ApiTags('Authentication')
 @ApiCookieAuth('refreshToken')
@@ -31,14 +31,14 @@ export class UpdateTokensController {
   })
   @ApiOkResponse({
     description: 'The token key pair was successfully updated',
-    type: LoginResponseDto,
+    type: SignInResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async update(
     @Cookies('refreshToken') refreshToken: string,
     @Req() req,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<LoginResponseDto> {
+  ): Promise<SignInResponseDto> {
     const response = await this.updateTokensService.update(
       refreshToken,
       req.user,

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { IJwtTokenResponse } from 'src/interfaces/token.interface';
-import { LoginResponseDto } from '../login/dtos/login-response.dto';
+import { SignInResponseDto } from '../sign-in/dtos/sign-in-response.dto';
 
-import { AccessTokenService } from '../tokens/access-token/access-token.service';
-import { RefreshTokenService } from '../tokens/refresh-token/refresh-token.service';
+import { AccessTokenService } from '../jwt-tokens/access-token/access-token.service';
+import { RefreshTokenService } from '../jwt-tokens/refresh-token/refresh-token.service';
 
 @Injectable()
 export class UpdateTokensService {
@@ -16,7 +16,7 @@ export class UpdateTokensService {
   async update(
     token: string,
     user: IJwtTokenResponse,
-  ): Promise<LoginResponseDto> {
+  ): Promise<SignInResponseDto> {
     try {
       const { userId } = user;
       const tokenInDb = await this.authRefreshTokenService.find(userId, token);
