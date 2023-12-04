@@ -8,11 +8,15 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The user email',
+  })
   @IsEmail()
   readonly email: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The user password',
+  })
   @IsNotEmpty()
   @IsString()
   @Length(8, 32)

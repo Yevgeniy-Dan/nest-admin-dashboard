@@ -5,13 +5,20 @@ import { LoginResponseDto } from './dtos/login-response.dto';
 import { LocalAuthGuard } from '../guards/local-auth.guard';
 
 import { LoginService } from './login.service';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Authentication')
 @Controller('auth/login')
 export class LoginController {
   constructor(private loginService: LoginService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post()
+  @ApiOperation({ summary: 'User login' })
+  @ApiOkResponse({
+    description: 'User successfully logged in',
+    type: LoginResponseDto,
+  })
   async login(@Req() req, @Res({ passthrough: true }) res: Response) {
     const loginResponse: LoginResponseDto = await this.loginService.login(
       req.user._doc,
