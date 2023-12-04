@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+
 import { IJwtPayload } from '../../../interfaces/token.interface';
+
 import { ACCESS_TOKEN_LIFESPAN } from 'src/constants';
 
 @Injectable()

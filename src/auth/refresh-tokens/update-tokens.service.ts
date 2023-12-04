@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+
 import { IJwtTokenResponse } from 'src/interfaces/token.interface';
 import { LoginResponseDto } from '../login/dtos/login-response.dto';
-import { RefreshTokenService } from '../token/refresh-token/refresh-token.service';
-import { AccessTokenService } from '../token/access-token/access-token.service';
+
+import { AccessTokenService } from '../tokens/access-token/access-token.service';
+import { RefreshTokenService } from '../tokens/refresh-token/refresh-token.service';
 
 @Injectable()
 export class UpdateTokensService {

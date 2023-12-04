@@ -1,9 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtPayload } from '../../../interfaces/token.interface';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/users/schemas/user.schema';
 import { Model } from 'mongoose';
+
+import { User } from 'src/users/schemas/user.schema';
+import { IJwtPayload } from '../../../interfaces/token.interface';
+
 import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
 
 @Injectable()

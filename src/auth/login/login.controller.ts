@@ -1,9 +1,10 @@
 import { Controller, Post, UseGuards, Req, Res } from '@nestjs/common';
-import { LocalAuthGuard } from '../guards/local-auth.guard';
-import { LoginService } from './login.service';
-import { LoginResponseDto } from './dtos/login-response.dto';
-
 import { Response } from 'express';
+
+import { LoginResponseDto } from './dtos/login-response.dto';
+import { LocalAuthGuard } from '../guards/local-auth.guard';
+
+import { LoginService } from './login.service';
 
 @Controller('auth/login')
 export class LoginController {

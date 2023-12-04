@@ -1,10 +1,9 @@
 import { Injectable, HttpException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { UsersService } from 'src/users/users.service';
 
-import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dtos/create-user.dto';
-
 import { IUser } from 'src/users/interfaces/user.interface';
 
 @Injectable()

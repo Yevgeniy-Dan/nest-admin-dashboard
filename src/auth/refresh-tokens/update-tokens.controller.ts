@@ -1,9 +1,11 @@
 import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
+
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh.guard';
-import { Cookies } from 'src/decorators/cookies.decorator';
 import { UpdateTokensService } from './update-tokens.service';
 
-import { Response } from 'express';
+import { Cookies } from 'src/decorators/cookies.decorator';
+
 import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
 
 @Controller('auth/refresh')

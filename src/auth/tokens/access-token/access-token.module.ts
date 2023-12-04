@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { Configuration } from 'src/interfaces/configuration.interface';
+
+import { UsersModule } from 'src/users/users.module';
 import { AccessTokenService } from './access-token.service';
+import { Configuration } from 'src/interfaces/configuration.interface';
+
 import { ACCESS_TOKEN_LIFESPAN } from 'src/constants';
 
 @Module({

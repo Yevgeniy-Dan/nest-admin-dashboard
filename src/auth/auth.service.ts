@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { UsersService } from 'src/users/users.service';
 
-import * as bcrypt from 'bcrypt';
 import { UserResponseDto } from './dtos/user-response.dto';
 
 @Injectable()
