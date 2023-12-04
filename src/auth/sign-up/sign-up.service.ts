@@ -1,17 +1,18 @@
 import { Injectable, HttpException } from '@nestjs/common';
 
 import { UsersService } from 'src/users/users.service';
-import { IUser } from 'src/users/interfaces/user.interface';
 
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dtos/create-user.dto';
+
+import { IUser } from 'src/users/interfaces/user.interface';
 
 @Injectable()
 export class SignUpService {
   constructor(private usersService: UsersService) {}
 
   async signup(user: CreateUserDto): Promise<IUser> {
-    const isExist = await this.usersService.findUserByEmail(user.email);
+    const isExist = await this.usersService.findOne(user.email);
 
     if (isExist) {
       throw new HttpException(
