@@ -4,13 +4,13 @@ import * as bcrypt from 'bcrypt';
 import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from './dtos/create-user.dto';
-import { IUser } from 'src/users/interfaces/user.interface';
+import { User } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class SignUpService {
   constructor(private usersService: UsersService) {}
 
-  async signup(user: CreateUserDto): Promise<IUser> {
+  async signup(user: CreateUserDto): Promise<User> {
     const isExist = await this.usersService.findOne(user.email);
 
     if (isExist) {

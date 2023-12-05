@@ -36,11 +36,9 @@ export class UpdateTokensService {
       });
 
       await this.authRefreshTokenService.save(user.userId, refreshToken);
-      const { email } = user;
       return {
         accessToken,
         refreshToken,
-        user: { email },
       };
     } catch (error) {
       throw new Error('Refresh token updated failed');

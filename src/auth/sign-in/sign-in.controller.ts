@@ -19,7 +19,10 @@ export class SignInController {
     description: 'User successfully logged in',
     type: SignInResponseDto,
   })
-  async signin(@Req() req, @Res({ passthrough: true }) res: Response) {
+  async signin(
+    @Req() req,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<SignInResponseDto> {
     const signinResponse: SignInResponseDto = await this.signinService.signin(
       req.user._doc,
     );

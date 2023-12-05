@@ -1,4 +1,10 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -11,17 +17,20 @@ import {
 import { JwtAccessAuthGuard } from 'src/auth/guards/jwt-access.guard';
 import { UsersService } from './users.service';
 
-import { IJwtTokenResponse } from 'src/interfaces/token.interface';
+// import { IJwtTokenResponse } from 'src/interfaces/token.interface';
 import { JwtTokenResponseDto } from 'src/auth/dtos/jwt-token-response.dto';
+import { User } from './schemas/user.schema';
+import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
+@UseInterceptors(MongooseClassSerializerInterceptor(User))
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @UseGuards(JwtAccessAuthGuard)
-  @Get('profile')
+  @Get('user')
   @ApiOperation({ summary: 'Get user profile' })
   @ApiHeader({
     name: 'Authorization',
@@ -32,7 +41,7 @@ export class UsersController {
     type: JwtTokenResponseDto,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  getProfile(@Req() req): IJwtTokenResponse {
-    return req.user;
+  async user(@Req() req): Promise<User> {
+    return this.usersService.findOne(req.user.email);
   }
 }

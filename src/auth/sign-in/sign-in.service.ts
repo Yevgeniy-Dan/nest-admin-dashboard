@@ -26,11 +26,9 @@ export class SignInService {
     });
 
     await this.authRefreshTokenService.save(user._id.toString(), refreshToken);
-    const { email } = user; //TODO: Should I use Exclude using class-transformer?
     return {
       accessToken,
       refreshToken,
-      user: { email },
     };
   }
 }

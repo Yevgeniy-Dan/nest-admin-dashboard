@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseInterceptors } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -9,9 +9,11 @@ import {
 import { SignUpService } from './sign-up.service';
 
 import { CreateUserDto } from './dtos/create-user.dto';
-import { UserResponseDto } from '../dtos/user-response.dto';
+import { User } from 'src/users/schemas/user.schema';
+import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
 
 @ApiTags('Authentication')
+@UseInterceptors(MongooseClassSerializerInterceptor(User))
 @Controller('auth/sign-up')
 export class SignUpController {
   constructor(private signupService: SignUpService) {}
@@ -20,10 +22,10 @@ export class SignUpController {
   @ApiOperation({ summary: 'User sign-up' })
   @ApiCreatedResponse({
     description: 'User successfully signed up',
-    type: UserResponseDto,
+    type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  signup(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
+  async signup(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.signupService.signup(createUserDto);
   }
 }

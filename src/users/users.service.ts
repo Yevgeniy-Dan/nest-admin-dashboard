@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 
 import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
 import { User } from './schemas/user.schema';
-import { IUser } from './interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
@@ -12,12 +11,12 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
-  async create(user: CreateUserDto): Promise<IUser> {
+  async create(user: CreateUserDto): Promise<User> {
     const newUser = new this.userModel(user);
     return await newUser.save();
   }
 
-  async findOne(email: string): Promise<IUser | undefined> {
+  async findOne(email: string): Promise<User | undefined> {
     return await this.userModel.findOne({
       email,
     });
