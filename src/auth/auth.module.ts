@@ -17,6 +17,8 @@ import { UpdateTokensService } from './update-tokens/update-tokens.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
+import { SignOutService } from './sign-out/sign-out.service';
+import { SignOutController } from './sign-out/sign-out.controller';
 
 @Module({
   imports: [
@@ -25,14 +27,20 @@ import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
     AuthAccessTokenModule,
     AuthRefreshTokenModule,
   ],
-  controllers: [SignUpController, SignInController, UpdateTokensController],
+  controllers: [
+    SignUpController,
+    SignInController,
+    SignOutController,
+    UpdateTokensController,
+  ],
   providers: [
     SignUpService,
+    SignInService,
+    SignOutService,
     AuthService,
     LocalStrategy,
     JwtAccessStrategy,
     JwtRefreshStrategy,
-    SignInService,
     UpdateTokensService,
   ],
 })

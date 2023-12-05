@@ -46,4 +46,8 @@ export class UpdateTokensService {
       throw new Error('Refresh token updated failed');
     }
   }
+
+  async removeOld(userId: string, token: string): Promise<void> {
+    await this.authRefreshTokenService.remove(userId, token);
+  }
 }

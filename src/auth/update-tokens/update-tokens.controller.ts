@@ -50,6 +50,8 @@ export class UpdateTokensController {
       secure: true,
     });
 
+    await this.updateTokensService.removeOld(req.user.userId, refreshToken);
+
     return response;
   }
 }

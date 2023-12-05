@@ -19,7 +19,7 @@ export class SignUpController {
   @Post()
   @ApiOperation({ summary: 'User sign-up' })
   @ApiCreatedResponse({
-    description: 'User successgully signed up',
+    description: 'User successfully signed up',
     type: UserResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
