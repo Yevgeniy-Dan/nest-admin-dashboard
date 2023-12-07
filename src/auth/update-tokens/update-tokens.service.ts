@@ -27,11 +27,13 @@ export class UpdateTokensService {
 
       const accessToken = this.authAccessTokenService.generate({
         email: user.email,
+        roles: user.roles,
         sub: user.userId,
       });
 
       const refreshToken = this.authRefreshTokenService.generate({
         email: user.email,
+        roles: user.roles,
         sub: user.userId,
       });
 

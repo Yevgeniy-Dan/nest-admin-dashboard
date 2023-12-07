@@ -3,6 +3,7 @@ import { HydratedDocument } from 'mongoose';
 import { IUser } from '../interfaces/user.interface';
 import { Exclude, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from 'src/roles/enums/role.enum';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -23,6 +24,10 @@ export class User implements IUser {
   @Prop({ type: [String], default: [] })
   @Exclude({ toPlainOnly: true })
   refreshTokens: string[];
+
+  @ApiProperty({ required: true, type: [String] })
+  @Prop({ required: true, default: [Role.User] })
+  roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

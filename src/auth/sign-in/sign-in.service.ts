@@ -17,11 +17,13 @@ export class SignInService {
     //TODO: define payload as {username: string; sub: string} in the future
     const accessToken = this.authAccessTokenService.generate({
       email: user.email,
+      roles: user.roles,
       sub: user._id.toString(),
     });
 
     const refreshToken = this.authRefreshTokenService.generate({
       email: user.email,
+      roles: user.roles,
       sub: user._id.toString(),
     });
 

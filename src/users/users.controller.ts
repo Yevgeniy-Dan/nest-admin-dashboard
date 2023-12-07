@@ -37,6 +37,9 @@ import { ParamsWithIdDto } from './dtos/params-with-id.dto';
 import UpdateUserDto from './dtos/user-input.dto';
 import { SignUpService } from 'src/auth/sign-up/sign-up.service';
 import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
+import { Roles } from 'src/roles/decorators/roles.decorator';
+import { Role } from 'src/roles/enums/role.enum';
+import { RolesGuard } from 'src/roles/guards/roles.guard';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -65,8 +68,9 @@ export class UsersController {
   }
 
   //TODO: only for admins
-  @UseGuards(JwtAccessAuthGuard)
-  @Get('users')
+  @UseGuards(JwtAccessAuthGuard, RolesGuard)
+  @Get('users/all')
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Get all users' })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'pageSize', type: Number, required: false })
