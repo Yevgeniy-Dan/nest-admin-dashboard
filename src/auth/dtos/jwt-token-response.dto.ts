@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 import { IJwtTokenResponse } from 'src/interfaces/token.interface';
-import { Role } from 'src/roles/enums/role.enum';
+import { Role } from 'src/roles/schemas/role.schema';
 
 export class JwtTokenResponseDto implements IJwtTokenResponse {
   @ApiProperty()

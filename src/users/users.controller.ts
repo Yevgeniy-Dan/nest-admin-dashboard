@@ -67,7 +67,6 @@ export class UsersController {
     return this.usersService.findOne(req.user.email);
   }
 
-  //TODO: only for admins
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Get('users/all')
   @Roles(Role.Admin)

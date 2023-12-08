@@ -1,4 +1,4 @@
-import { Role } from 'src/roles/enums/role.enum';
+import { Role } from 'src/roles/schemas/role.schema';
 
 export interface IUser {
   _id?: string;
