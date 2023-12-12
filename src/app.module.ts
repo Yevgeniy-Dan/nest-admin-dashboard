@@ -10,6 +10,7 @@ import { Configuration } from './interfaces/configuration.interface';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
+import { BlogsModule } from './blogs/blogs.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { RolesModule } from './roles/roles.module';
     AuthModule,
     UsersModule,
     RolesModule,
+    BlogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

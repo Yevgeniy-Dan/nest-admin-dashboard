@@ -22,6 +22,7 @@ export class SignUpService {
 
     const password = await bcrypt.hash(user.password, 10);
 
+    //TODO: assign default 'User' role
     return await this.usersService.create({
       ...user,
       password,

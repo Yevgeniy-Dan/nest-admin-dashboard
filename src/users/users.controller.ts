@@ -68,7 +68,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Get('users/all')
+  @Get('users')
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Get all users' })
   @ApiQuery({ name: 'page', type: Number, required: false })
@@ -88,8 +88,9 @@ export class UsersController {
     return await this.usersService.findAll(page, pageSize);
   }
 
-  //TODO: only for admins
   @Post('create/user')
+  @UseGuards(RolesGuard)
+  @Roles(Role.Admin)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({ type: CreateUserDto, description: 'User data to create' })
   @ApiCreatedResponse({
@@ -143,8 +144,8 @@ export class UsersController {
     }
   }
 
-  //TODO: also for admins
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Delete('delete/user/:id')
   @ApiOperation({ summary: 'Delete user profile' })
   @ApiHeader({
