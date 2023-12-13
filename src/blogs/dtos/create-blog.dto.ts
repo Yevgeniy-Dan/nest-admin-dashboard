@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBlogDto {
   @ApiProperty({ required: true, description: 'The blog title' })
@@ -11,9 +11,4 @@ export class CreateBlogDto {
   @IsString()
   @IsNotEmpty()
   readonly description: string;
-
-  @ApiProperty({ required: true, description: 'The ID of the author' })
-  @IsMongoId()
-  @IsNotEmpty()
-  readonly author: string;
 }

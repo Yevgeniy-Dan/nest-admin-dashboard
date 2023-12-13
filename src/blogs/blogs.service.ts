@@ -28,9 +28,12 @@ export class BlogsService {
     });
   }
 
-  async create(blog: CreateBlogDto): Promise<Blog | Error> {
+  async create(blog: CreateBlogDto, userId: string): Promise<Blog | Error> {
     try {
-      const newBlog = new this.blogModel(blog);
+      const newBlog = new this.blogModel({
+        ...blog,
+        author: userId,
+      });
       return await newBlog.save();
     } catch (error) {
       return new Error(error);
@@ -40,7 +43,10 @@ export class BlogsService {
   async update(blogId: string, blogData: UpdateBlogDto): Promise<Blog | Error> {
     try {
       const blog = await this.blogModel
-        .findByIdAndUpdate(blogId, blogData)
+        .findByIdAndUpdate(blogId, {
+          description: blogData.description,
+          title: blogData.title,
+        })
         .setOptions({ new: true });
 
       return blog;

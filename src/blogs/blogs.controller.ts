@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -50,13 +49,7 @@ export class BlogsController {
     @Req() req,
     @Body() blog: CreateBlogDto,
   ): Promise<Blog | Error> {
-    if (req.user.userId !== blog.author) {
-      return new ForbiddenException(
-        'You do not have permission to create blog. User IDs do not match',
-      );
-    }
-
-    return await this.blogService.create(blog);
+    return await this.blogService.create(blog, req.user.userId);
   }
 
   @Patch('update/blog/:id')
@@ -70,7 +63,7 @@ export class BlogsController {
       //TODO: req.user.userId === blog.author
       return await this.blogService.update(id, blog);
     } catch (error) {
-      return new error();
+      return new Error(error);
     }
   }
 

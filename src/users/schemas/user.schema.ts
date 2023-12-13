@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
-import { Exclude, Transform } from 'class-transformer';
+import { HydratedDocument } from 'mongoose';
+import * as mongoose from 'mongoose';
+import { Exclude } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Factory } from 'nestjs-seeder';
@@ -12,10 +13,6 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema()
 export class User implements IUser {
-  @ApiProperty({ required: false })
-  @Transform(({ value }) => value.toString())
-  _id?: string;
-
   @ApiProperty({ required: true })
   @Prop({ required: true, unique: true })
   @Factory((faker) => faker.internet.email())
@@ -38,7 +35,7 @@ export class User implements IUser {
     enum: Object.values(Role),
   })
   @Prop({
-    type: [{ type: Types.ObjectId, ref: 'Role' }],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Role' }],
     required: true,
   })
   roles: Role[];

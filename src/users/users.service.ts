@@ -33,7 +33,9 @@ export class UsersService {
 
   async update(userId: string, userData: UpdateUserDto): Promise<User | Error> {
     const user = await this.userModel
-      .findByIdAndUpdate(userId, userData)
+      .findByIdAndUpdate(userId, {
+        email: userData.email,
+      })
       .setOptions({ new: true });
 
     if (!user) {
