@@ -6,9 +6,13 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+
 import { SignOutService } from './sign-out.service';
+
 import { Cookies } from 'src/decorators/cookies.decorator';
+
 import { JwtAccessAuthGuard } from '../guards/jwt-access.guard';
+
 import { SignOutResponseDto } from './dtos/sign-out.dto';
 
 @ApiTags('Authentication')

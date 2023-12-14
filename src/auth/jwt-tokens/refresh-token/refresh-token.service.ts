@@ -15,12 +15,25 @@ export class RefreshTokenService {
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
 
+  /**
+   * Generates a JSON Web Token (JWT) for refresh token based on the provided payload.
+   *
+   * @param payload - The payload containing user information to be encoded into the JWT.
+   * @returns A string representing the generated JWT for refresh token.
+   */
   generate(payload: IJwtPayload): string {
     return this.jwtService.sign(payload, {
       expiresIn: `${REFRESH_TOKEN_LIFESPAN}d`,
     });
   }
 
+  /**
+   * Saves a refresh token for a user in the database.
+   *
+   * @param userId - The unique identifier of the user.
+   * @param refreshToken - The refresh token to be saved for the user.
+   * @throws NotFoundException if the user with the provided userId is not found.
+   */
   async save(userId: string, refreshToken: string): Promise<void> {
     const user = await this.userModel.findById(userId);
 
@@ -33,6 +46,13 @@ export class RefreshTokenService {
     await user.save();
   }
 
+  /**
+   * Removes a refresh token associated with a user from the database.
+   *
+   * @param userId - The unique identifier of the user.
+   * @param refreshToken - The refresh token to be removed.
+   * @throws NotFoundException if the user with the provided userId is not found.
+   */
   async remove(userId: string, refreshToken: string): Promise<void> {
     const user = await this.userModel.findById(userId);
 
@@ -47,6 +67,14 @@ export class RefreshTokenService {
     await user.save();
   }
 
+  /**
+   * Finds a refresh token associated with a user in the database.
+   *
+   * @param userId - The unique identifier of the user.
+   * @param refreshToken - The refresh token to be found.
+   * @returns A Promise resolving to the found refresh token or undefined if not found.
+   * @throws NotFoundException if the user with the provided userId is not found.
+   */
   async find(
     userId: string,
     refreshToken: string,

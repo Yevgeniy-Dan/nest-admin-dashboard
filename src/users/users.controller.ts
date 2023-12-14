@@ -18,9 +18,10 @@ import { JwtAccessAuthGuard } from 'src/auth/guards/jwt-access.guard';
 import { UsersService } from './users.service';
 
 // import { IJwtTokenResponse } from 'src/interfaces/token.interface';
-import { JwtTokenResponseDto } from 'src/auth/dtos/jwt-token-response.dto';
 import { User } from './schemas/user.schema';
+
 import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
+import { JwtTokenResponseDto } from 'src/auth/dtos/jwt-token-response.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()

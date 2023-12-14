@@ -8,12 +8,11 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { Cookies } from 'src/decorators/cookies.decorator';
+import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
+
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh.guard';
 import { UpdateTokensService } from './update-tokens.service';
-
-import { Cookies } from 'src/decorators/cookies.decorator';
-
-import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
 import { SignInResponseDto } from '../sign-in/dtos/sign-in-response.dto';
 
 @ApiTags('Authentication')

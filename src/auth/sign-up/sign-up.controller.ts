@@ -10,6 +10,7 @@ import { SignUpService } from './sign-up.service';
 
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from 'src/users/schemas/user.schema';
+
 import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
 
 @ApiTags('Authentication')
