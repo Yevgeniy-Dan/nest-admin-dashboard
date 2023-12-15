@@ -10,6 +10,13 @@ import { User } from 'src/users/schemas/user.schema';
 export class SignUpService {
   constructor(private usersService: UsersService) {}
 
+  /**
+   * Signs up a new user by creating a user account with the provided data.
+   *
+   * @param user - The data of the user to be signed up, provided as a CreateUserDto.
+   * @returns A Promise resolving to the newly created user.
+   * @throws HttpException - If a user with the same email already exists.
+   */
   async signup(user: CreateUserDto): Promise<User> {
     const isExist = await this.usersService.findOne(user.email);
 

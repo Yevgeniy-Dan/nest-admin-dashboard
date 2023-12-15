@@ -9,6 +9,13 @@ import { User } from 'src/users/schemas/user.schema';
 export class AuthService {
   constructor(private usersService: UsersService) {}
 
+  /**
+   * Validates a user by checking the provided email and password against stored user data.
+   *
+   * @param email - The email address of the user.
+   * @param password - The password to validate against the user's stored password.
+   * @returns A Promise resolving to the validated user if successful, otherwise null.
+   */
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.usersService.findOne(email);
 

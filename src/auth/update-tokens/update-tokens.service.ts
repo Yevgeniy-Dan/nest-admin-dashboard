@@ -13,6 +13,14 @@ export class UpdateTokensService {
     private authRefreshTokenService: RefreshTokenService,
   ) {}
 
+  /**
+   * Updates access and refresh tokens for the specified user based on a provided refresh token.
+   *
+   * @param token - The refresh token used to request new access and refresh tokens.
+   * @param user - The user information extracted from the existing tokens.
+   * @returns A Promise resolving to a SignInResponseDto containing the new access and refresh tokens.
+   * @throws Error - If the refresh token is invalid or if the refresh token update process fails.
+   */
   async update(
     token: string,
     user: IJwtTokenResponse,
@@ -47,6 +55,13 @@ export class UpdateTokensService {
     }
   }
 
+  /**
+   * Removes an old refresh token associated with the specified user.
+   *
+   * @param userId - The unique identifier of the user.
+   * @param token - The refresh token to be removed.
+   * @returns A Promise resolving to void.
+   */
   async removeOld(userId: string, token: string): Promise<void> {
     await this.authRefreshTokenService.remove(userId, token);
   }
