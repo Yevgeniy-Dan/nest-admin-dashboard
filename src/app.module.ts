@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { PostsModule } from './posts/posts.module';
+import { ContentModule } from './content/content.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PostsModule } from './posts/posts.module';
     RolesModule,
     BlogsModule,
     PostsModule,
+    ContentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

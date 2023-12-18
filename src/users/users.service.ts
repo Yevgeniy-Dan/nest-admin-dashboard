@@ -5,11 +5,14 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
 import { User } from './schemas/user.schema';
 import UpdateUserDto from './dtos/user-input.dto';
+import { ContentService } from 'src/content/content.service';
+import { Content, ContentDocument } from 'src/content/schemas/content.schema';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    private contentService: ContentService,
   ) {}
 
   /**
@@ -90,5 +93,48 @@ export class UsersService {
     if (!deletedUser) {
       return new NotFoundException();
     }
+  }
+
+  /**
+   * Uploads a user avatar to Amazon S3, associates it with the specified user, and returns the uploaded content object.
+   * @param userId - The ID of the user for whom the avatar is being uploaded.
+   * @param imageBuffer - The buffer containing the avatar image data.
+   * @param filename - The original filename of the avatar image.
+   * @returns A Promise resolving to the uploaded content object or an error (e.g., NotFoundException)
+   */
+  async addAvatar(
+    userId: string,
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<Content | Error> {
+    const avatar = await this.contentService.upload(imageBuffer, filename);
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, {
+        avatar,
+      })
+      .setOptions({ new: true });
+
+    if (!user) {
+      return new NotFoundException();
+    }
+
+    return avatar;
+  }
+
+  async deleteAvatar(userId: string): Promise<User | Error> {
+    const user = await this.userModel.findById(userId);
+    const { _id: fileId } = user.avatar as ContentDocument;
+
+    if (fileId) {
+      user.avatar = null;
+
+      await user.save();
+      await this.contentService.delete(fileId.toString());
+
+      console.log(user);
+      return user;
+    }
+
+    return new NotFoundException();
   }
 }

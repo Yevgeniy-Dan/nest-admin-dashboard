@@ -5,6 +5,10 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
+
+import { config } from 'aws-sdk';
+import { Configuration } from './interfaces/configuration.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +25,16 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
+
+  const configService: ConfigService<Configuration> = app.get(ConfigService);
+
+  config.update({
+    credentials: {
+      accessKeyId: configService.get<string>('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: configService.get<string>('AWS_SECRET_ACCESS_KEY'),
+    },
+    region: configService.get<string>('AWS_REGION'),
+  });
 
   await app.listen(3000);
 }

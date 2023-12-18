@@ -8,6 +8,7 @@ import { Factory } from 'nestjs-seeder';
 
 import { IUser } from '../interfaces/user.interface';
 import { Role } from 'src/roles/schemas/role.schema';
+import { Content } from 'src/content/schemas/content.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -39,6 +40,18 @@ export class User implements IUser {
     required: true,
   })
   roles: Role[];
+
+  @ApiProperty({
+    required: false,
+    description: 'The avatar url',
+    type: String,
+  })
+  @Prop({
+    required: false,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Content',
+  })
+  avatar?: Content;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

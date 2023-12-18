@@ -5,10 +5,12 @@ import { User, UserSchema } from './schemas/user.schema';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { SignUpService } from 'src/auth/sign-up/sign-up.service';
+import { ContentModule } from 'src/content/content.module';
 import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
   imports: [
+    ContentModule,
     RolesModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
