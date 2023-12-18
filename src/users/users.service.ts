@@ -36,7 +36,12 @@ export class UsersService {
     pageSize: number = 10,
   ): Promise<User[] | undefined> {
     const skip = (page - 1) * pageSize;
-    return await this.userModel.find().skip(skip).limit(pageSize).exec();
+    return await this.userModel
+      .find()
+      .skip(skip)
+      .limit(pageSize)
+      .populate('roles', 'role')
+      .exec();
   }
 
   /**
@@ -45,8 +50,11 @@ export class UsersService {
    * @param user - The data of the user to be created, provided as a CreateUserDto.
    * @returns A Promise resolving to the newly created user.
    */
-  async create(user: CreateUserDto): Promise<User> {
-    const newUser = new this.userModel(user);
+  async create(user: CreateUserDto, roles: string[]): Promise<User> {
+    const newUser = new this.userModel({
+      ...user,
+      roles,
+    });
     return await newUser.save();
   }
 

@@ -5,10 +5,15 @@ import { UsersService } from 'src/users/users.service';
 
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from 'src/users/schemas/user.schema';
+import { RolesService } from 'src/roles/roles.service';
+import { Role } from 'src/roles/enums/role.enum';
 
 @Injectable()
 export class SignUpService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private rolesService: RolesService,
+  ) {}
 
   /**
    * Signs up a new user by creating a user account with the provided data.
@@ -29,10 +34,16 @@ export class SignUpService {
 
     const password = await bcrypt.hash(user.password, 10);
 
+    //Assign default user role
+    const { _id } = await this.rolesService.findOne(Role.User);
+    console.log(_id);
     //TODO: assign default 'User' role
-    return await this.usersService.create({
-      ...user,
-      password,
-    });
+    return await this.usersService.create(
+      {
+        ...user,
+        password,
+      },
+      [_id.toString()],
+    );
   }
 }
