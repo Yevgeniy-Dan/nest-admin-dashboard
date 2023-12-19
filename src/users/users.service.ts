@@ -142,6 +142,12 @@ export class UsersService {
     }
   }
 
+  /**
+   * Deletes the avatar of a user, removes the reference from the user document,
+   * and deletes the corresponding file from the storage.
+   * @param userId - The ID of the user.
+   * @returns A Promise resolving to the updated user without the avatar or an Error if the avatar or user is not found.
+   */
   async deleteAvatar(userId: string): Promise<User | Error> {
     const user = await this.userModel.findById(userId);
     const { _id: fileId } = user.avatar as ContentDocument;

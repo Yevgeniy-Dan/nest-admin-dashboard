@@ -11,4 +11,9 @@ export class CreatePostDto {
   @IsMongoId()
   @IsNotEmpty()
   readonly blogId: string;
+
+  @ApiProperty({ required: true, description: 'The ID of the photo url' })
+  @IsMongoId()
+  @IsNotEmpty()
+  readonly contentId: string;
 }

@@ -43,7 +43,7 @@ export class User implements IUser {
 
   @ApiProperty({
     required: false,
-    description: 'The avatar url',
+    description: 'The avatar ref',
     type: String,
   })
   @Prop({

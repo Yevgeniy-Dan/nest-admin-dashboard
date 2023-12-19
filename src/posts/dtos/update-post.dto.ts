@@ -13,4 +13,10 @@ export class UpdatePostDto {
   @IsOptional()
   @IsNotEmpty()
   readonly blogId?: string;
+
+  @ApiProperty({ required: true, description: 'The ID of the photo url' })
+  @IsMongoId()
+  @IsOptional()
+  @IsNotEmpty()
+  readonly contentId?: string;
 }
