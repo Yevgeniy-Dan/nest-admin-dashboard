@@ -23,10 +23,16 @@ export class UsersService {
    * @param email - The email address of the user to retrieve.
    * @returns A Promise resolving to the found user if successful, or undefined if the user is not found.
    */
-  async findOne(email: string): Promise<User | undefined> {
-    return await this.userModel.findOne({
+  async findOne(email: string): Promise<User | Error> {
+    const user = await this.userModel.findOne({
       email,
     });
+
+    if (!user) {
+      return new NotFoundException();
+    }
+
+    return user;
   }
 
   /**
