@@ -18,13 +18,46 @@ import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dtos/create-blog.dto';
 import { ParamsWithIdDto } from 'src/users/dtos/params-with-id.dto';
 import { UpdateBlogDto } from './dtos/update-blog.dto';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
-@Controller('')
+@ApiTags('Blogs')
+@ApiBearerAuth()
+@Controller()
 export class BlogsController {
   constructor(private blogService: BlogsService) {}
   @Get('blog')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Roles(Role.User)
+  @ApiOperation({
+    summary: 'Get a blog by ID',
+    description: 'Retrieve a blog by its ID.',
+  })
+  @ApiBody({ type: ParamsWithIdDto, description: 'Blog ID' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+  })
+  @ApiOkResponse({
+    description: 'Successfully retrieved blog.',
+    type: Blog,
+  })
+  @ApiNotFoundResponse({ description: 'Blog not found.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiBadRequestResponse({ description: 'Invalid blogId  format' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async getBlog(@Body() { id }: ParamsWithIdDto): Promise<Blog | Error> {
     return this.blogService.findOne(id);
   }
@@ -38,6 +71,20 @@ export class BlogsController {
   @Get('blogs')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Roles(Role.User)
+  @ApiOperation({
+    summary: 'Get all blogs',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+  })
+  @ApiOkResponse({
+    description: 'Blogs successfully retrieved.',
+    type: [Blog],
+  })
+  @ApiNotFoundResponse({ description: 'Blogs not found.' })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async getAllBlogs(@Req() req): Promise<Blog[] | Error> {
     return await this.blogService.findAll(req.user.userId);
   }
@@ -45,6 +92,20 @@ export class BlogsController {
   @Post('create/blog')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Roles(Role.User)
+  @ApiOperation({
+    summary: 'Create blog',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+  })
+  @ApiBody({ type: CreateBlogDto, description: 'Blog data to create' })
+  @ApiCreatedResponse({
+    description: 'Blog created successfully',
+    type: Blog,
+  })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async createBlog(
     @Req() req,
     @Body() blog: CreateBlogDto,
@@ -55,6 +116,21 @@ export class BlogsController {
   @Patch('update/blog/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Roles(Role.User)
+  @ApiOperation({
+    summary: 'Update blog',
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+  })
+  @ApiParam({ name: 'id', description: 'Blog ID' })
+  @ApiBody({ type: UpdateBlogDto, description: 'Blog data to update' })
+  @ApiOkResponse({
+    description: 'Blog updated successfully',
+    type: Blog,
+  })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async updateBlog(
     @Param() { id }: ParamsWithIdDto,
     @Body() blog: UpdateBlogDto,
@@ -70,6 +146,13 @@ export class BlogsController {
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Roles(Role.User)
   @Delete('delete/blog/:id')
+  @ApiOperation({ summary: 'Delete blog' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+  })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async deleteBlog(@Param() { id }: ParamsWithIdDto): Promise<void | Error> {
     //TODO: req.user.userId === blog.author
     return await this.blogService.delete(id);

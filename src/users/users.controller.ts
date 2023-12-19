@@ -72,8 +72,14 @@ export class UsersController {
     type: User,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getUser(@Req() req): Promise<User> {
-    return this.usersService.findOne(req.user.email);
+  async getUser(@Req() req): Promise<User | Error> {
+    const user = await this.usersService.findOne(req.user.email);
+
+    if (!user) {
+      return new NotFoundException();
+    }
+
+    return user;
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
@@ -106,6 +112,7 @@ export class UsersController {
     description: 'User created successfully',
     type: User,
   })
+  @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   async createUser(@Body() user: CreateUserDto): Promise<User | Error> {
     return await this.signUpService.signup(user);
   }
