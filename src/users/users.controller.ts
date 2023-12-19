@@ -49,6 +49,8 @@ import { Role } from 'src/roles/enums/role.enum';
 import { RolesGuard } from 'src/roles/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Content } from 'src/content/schemas/content.schema';
+import { RolesService } from 'src/roles/roles.service';
+import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -57,6 +59,7 @@ import { Content } from 'src/content/schemas/content.schema';
 export class UsersController {
   constructor(
     private usersService: UsersService,
+    private rolesService: RolesService,
     private signUpService: SignUpService,
   ) {}
 
@@ -72,13 +75,13 @@ export class UsersController {
     type: User,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getUser(@Req() req): Promise<User> {
+  async getUser(@Req() req: IRequestWithUserPayload): Promise<User> {
     return await this.usersService.findOne(req.user.email);
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Get('users')
-  @Roles(Role.Admin)
+  @Roles(Role.User)
   @ApiOperation({ summary: 'Get all users' })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'pageSize', type: Number, required: false })
@@ -99,7 +102,7 @@ export class UsersController {
 
   @Post('create/user')
   @UseGuards(RolesGuard)
-  @Roles(Role.Admin)
+  @Roles(Role.User)
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({ type: CreateUserDto, description: 'User data to create' })
   @ApiCreatedResponse({
@@ -111,9 +114,9 @@ export class UsersController {
     return await this.signUpService.signup(user);
   }
 
-  //TODO: define logic when user wants to update password
   @Patch('update/user/:id')
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, RolesGuard)
+  @Roles(Role.User)
   @ApiOperation({ summary: 'Update user profile' })
   @ApiHeader({
     name: 'Authorization',
@@ -130,21 +133,21 @@ export class UsersController {
     description: 'You do not have permission to update user',
   })
   async updateUser(
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
     @Param() { id }: ParamsWithIdDto,
     @Body() user: UpdateUserDto,
   ): Promise<User> {
     try {
-      if (req.user.userId !== id) {
-        throw new ForbiddenException(
-          'You do not have permission to update user',
-        );
+      const roleNames = await this.rolesService.findByIds(req.user.roles);
+
+      if (req.user.userId === id || roleNames.includes(Role.Admin)) {
+        const updatedUser: UpdateUserDto = {
+          email: user.email,
+        };
+        return await this.usersService.update(id, updatedUser);
       }
 
-      const updatedUser: UpdateUserDto = {
-        email: user.email,
-      };
-      return await this.usersService.update(id, updatedUser);
+      throw new ForbiddenException('You do not have permission to update user');
     } catch (error) {
       if (error.code === 11000) {
         throw new HttpException('Email is already taken', HttpStatus.CONFLICT);
@@ -194,7 +197,7 @@ export class UsersController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
   async addAvatar(
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
     @Param() { id }: ParamsWithIdDto,
     @UploadedFile(
       new ParseFilePipeBuilder()
@@ -240,7 +243,7 @@ export class UsersController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
   async deleteAvatar(
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
     @Param() { id }: ParamsWithIdDto,
   ): Promise<User> {
     if (req.user.userId !== id) {

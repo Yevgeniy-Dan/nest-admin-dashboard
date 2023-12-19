@@ -6,6 +6,7 @@ import { LocalAuthGuard } from '../guards/local-auth.guard';
 
 import { SignInService } from './sign-in.service';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { IRequestWithUser } from 'src/interfaces/request.interface';
 
 @ApiTags('Authentication')
 @Controller('auth/sign-in')
@@ -20,11 +21,11 @@ export class SignInController {
     type: SignInResponseDto,
   })
   async signin(
-    @Req() req,
+    @Req() req: IRequestWithUser,
     @Res({ passthrough: true }) res: Response,
   ): Promise<SignInResponseDto> {
     const signinResponse: SignInResponseDto = await this.signinService.signin(
-      req.user._doc,
+      req.user,
     );
 
     res.cookie('refreshToken', signinResponse.refreshToken, {

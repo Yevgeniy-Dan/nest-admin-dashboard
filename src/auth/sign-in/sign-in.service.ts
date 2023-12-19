@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 
 import { SignInResponseDto } from './dtos/sign-in-response.dto';
-import { IUser } from 'src/users/interfaces/user.interface';
 
 import { AccessTokenService } from '../jwt-tokens/access-token/access-token.service';
 import { RefreshTokenService } from '../jwt-tokens/refresh-token/refresh-token.service';
+import { UserDocument } from 'src/users/schemas/user.schema';
 
 @Injectable()
 export class SignInService {
@@ -16,10 +16,10 @@ export class SignInService {
   /**
    * Signs in a user and generates access and refresh tokens.
    *
-   * @param user - The user information to be used for generating tokens, provided as an IUser.
+   * @param user - The user information to be used for generating tokens, provided as an UserDocument.
    * @returns A Promise resolving to a SignInResponseDto containing the generated access and refresh tokens.
    */
-  async signin(user: IUser): Promise<SignInResponseDto> {
+  async signin(user: UserDocument): Promise<SignInResponseDto> {
     //TODO: define payload as {username: string; sub: string} in the future
     const accessToken = this.authAccessTokenService.generate({
       email: user.email,

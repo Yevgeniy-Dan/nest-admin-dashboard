@@ -15,6 +15,10 @@ import { Cookies } from 'src/decorators/cookies.decorator';
 
 import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
 import { SignInResponseDto } from '../sign-in/dtos/sign-in-response.dto';
+import { RolesGuard } from 'src/roles/guards/roles.guard';
+import { Roles } from 'src/roles/decorators/roles.decorator';
+import { Role } from 'src/roles/enums/role.enum';
+import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 
 @ApiTags('Authentication')
 @ApiCookieAuth('refreshToken')
@@ -22,7 +26,8 @@ import { SignInResponseDto } from '../sign-in/dtos/sign-in-response.dto';
 export class UpdateTokensController {
   constructor(private updateTokensService: UpdateTokensService) {}
 
-  @UseGuards(JwtRefreshAuthGuard)
+  @UseGuards(JwtRefreshAuthGuard, RolesGuard)
+  @Roles(Role.User)
   @Post()
   @ApiOperation({
     summary: 'Refresh tokens using refresh token',
@@ -36,7 +41,7 @@ export class UpdateTokensController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async update(
     @Cookies('refreshToken') refreshToken: string,
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
     @Res({ passthrough: true }) res: Response,
   ): Promise<SignInResponseDto> {
     const response = await this.updateTokensService.update(

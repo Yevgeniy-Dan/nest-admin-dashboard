@@ -32,6 +32,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 
 @ApiTags('Blogs')
 @ApiBearerAuth()
@@ -85,7 +86,7 @@ export class BlogsController {
   @ApiNotFoundResponse({ description: 'Blogs not found.' })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getAllBlogs(@Req() req): Promise<Blog[]> {
+  async getAllBlogs(@Req() req: IRequestWithUserPayload): Promise<Blog[]> {
     return await this.blogService.findAll(req.user.userId);
   }
 
@@ -106,7 +107,10 @@ export class BlogsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async createBlog(@Req() req, @Body() blog: CreateBlogDto): Promise<Blog> {
+  async createBlog(
+    @Req() req: IRequestWithUserPayload,
+    @Body() blog: CreateBlogDto,
+  ): Promise<Blog> {
     return await this.blogService.create(blog, req.user.userId);
   }
 

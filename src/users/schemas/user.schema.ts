@@ -6,14 +6,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { Factory } from 'nestjs-seeder';
 
-import { IUser } from '../interfaces/user.interface';
 import { Role } from 'src/roles/schemas/role.schema';
 import { Content } from 'src/content/schemas/content.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
-export class User implements IUser {
+export class User {
   @ApiProperty({ required: true })
   @Prop({ required: true, unique: true })
   @Factory((faker) => faker.internet.email())

@@ -40,6 +40,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 
 /**
  * A short note on creating posts. In the current implementation, posts
@@ -103,7 +104,9 @@ export class PostsController {
   @ApiNotFoundResponse({ description: 'Posts not found.' })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getAllPosts(@Req() req): Promise<PostSchema[]> {
+  async getAllPosts(
+    @Req() req: IRequestWithUserPayload,
+  ): Promise<PostSchema[]> {
     return await this.postService.findAll(req.user.userId);
   }
 
@@ -125,7 +128,7 @@ export class PostsController {
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async createPost(
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
     @Body() post: CreatePostDto,
   ): Promise<PostSchema> {
     return await this.postService.create(req.user.userId, post);
@@ -150,7 +153,7 @@ export class PostsController {
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async updateBlog(
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
     @Param() { id }: ParamsWithIdDto,
     @Body() post: UpdatePostDto,
   ): Promise<PostSchema> {
@@ -197,9 +200,12 @@ export class PostsController {
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
   async addPostPhoto(
     @UploadedFile(
-      new ParseFilePipeBuilder().build({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
+      new ParseFilePipeBuilder()
+        // .addFileTypeValidator({ fileType: 'jpg' })
+        //   .addFileTypeValidator({ fileType: 'png' })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
     )
     file: Express.Multer.File,
   ): Promise<Content> {

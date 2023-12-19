@@ -10,6 +10,10 @@ import { SignOutService } from './sign-out.service';
 import { Cookies } from 'src/decorators/cookies.decorator';
 import { JwtAccessAuthGuard } from '../guards/jwt-access.guard';
 import { SignOutResponseDto } from './dtos/sign-out.dto';
+import { RolesGuard } from 'src/roles/guards/roles.guard';
+import { Roles } from 'src/roles/decorators/roles.decorator';
+import { Role } from 'src/roles/enums/role.enum';
+import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 
 @ApiTags('Authentication')
 @ApiCookieAuth('refreshToken')
@@ -17,7 +21,8 @@ import { SignOutResponseDto } from './dtos/sign-out.dto';
 export class SignOutController {
   constructor(private signoutService: SignOutService) {}
 
-  @UseGuards(JwtAccessAuthGuard)
+  @UseGuards(JwtAccessAuthGuard, RolesGuard)
+  @Roles(Role.User)
   @Post()
   @ApiOperation({
     summary: 'User sign-out',
@@ -30,7 +35,7 @@ export class SignOutController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   async signout(
     @Cookies('refreshToken') refreshToken: string,
-    @Req() req,
+    @Req() req: IRequestWithUserPayload,
   ): Promise<SignOutResponseDto> {
     const oldToken = await this.signoutService.signout(
       req.user.userId,
