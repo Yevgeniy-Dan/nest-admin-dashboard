@@ -13,6 +13,7 @@ import { RolesModule } from './roles/roles.module';
 import { BlogsModule } from './blogs/blogs.module';
 import { PostsModule } from './posts/posts.module';
 import { ContentModule } from './content/content.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -26,6 +27,13 @@ import { ContentModule } from './content/content.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService<Configuration>) => ({
         uri: configService.get<string>('MONGODB_URI'),
+      }),
+    }),
+    MulterModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<Configuration>) => ({
+        dest: configService.get<string>('MULTER_DEST'),
       }),
     }),
     AuthModule,

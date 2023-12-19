@@ -8,6 +8,8 @@ import UpdateUserDto from './dtos/user-input.dto';
 import { ContentService } from 'src/content/content.service';
 import { Content, ContentDocument } from 'src/content/schemas/content.schema';
 
+import * as sharp from 'sharp';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -107,18 +109,37 @@ export class UsersService {
     imageBuffer: Buffer,
     filename: string,
   ): Promise<Content | Error> {
-    const avatar = await this.contentService.upload(imageBuffer, filename);
-    const user = await this.userModel
-      .findByIdAndUpdate(userId, {
-        avatar,
-      })
-      .setOptions({ new: true });
+    try {
+      // Resize the avatar image using Sharp with the following parameters:
+      // - Target size: 200x200 pixels
+      // - Fit strategy: Keep the aspect ratio and fit the image inside the specified dimensions
+      // - Without enlargement: Prevent enlarging the image if its dimensions are already smaller
+      const resizedAvatarBuffer = await sharp(imageBuffer)
+        .resize(200, 200, {
+          fit: sharp.fit.inside,
+          withoutEnlargement: true,
+        })
+        .toBuffer();
 
-    if (!user) {
-      return new NotFoundException();
+      const avatar = await this.contentService.upload(
+        'avatars',
+        resizedAvatarBuffer,
+        filename,
+      );
+      const user = await this.userModel
+        .findByIdAndUpdate(userId, {
+          avatar,
+        })
+        .setOptions({ new: true });
+
+      if (!user) {
+        return new NotFoundException();
+      }
+
+      return avatar;
+    } catch (error) {
+      return new Error('Failed to add avatar');
     }
-
-    return avatar;
   }
 
   async deleteAvatar(userId: string): Promise<User | Error> {

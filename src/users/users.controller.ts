@@ -15,6 +15,7 @@ import {
   Query,
   UploadedFile,
   NotFoundException,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -194,7 +195,13 @@ export class UsersController {
   async addAvatar(
     @Req() req,
     @Param() { id }: ParamsWithIdDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: 'jpg' })
+        .addFileTypeValidator({ fileType: 'png' })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file: Express.Multer.File,
   ): Promise<Content | Error> {
     try {
       if (req.user.userId !== id) {

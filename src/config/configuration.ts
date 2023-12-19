@@ -6,4 +6,5 @@ export default () => ({
   awsBucket: process.env.AWS_BUCKET,
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
   awsSecretAccesssKey: process.env.AWS_SECRET_ACCESS_KEY,
+  multerDest: process.env.MULTER_DEST,
 });

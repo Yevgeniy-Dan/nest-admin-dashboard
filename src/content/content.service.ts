@@ -19,18 +19,23 @@ export class ContentService {
 
   /**
    * Uploads a public file to Amazon S3 and creates a record in the content model.
+   * @param schemaName - The name of the schema or directory within the S3 bucket.
    * @param dataBuffer - The buffer containing the file data.
    * @param filename - The original filename of the file.
    * @returns A Promise resolving to the created content object.
    */
-  async upload(dataBuffer: Buffer, filename: string): Promise<Content> {
+  async upload(
+    schemaName: string = 'common',
+    dataBuffer: Buffer,
+    filename: string,
+  ): Promise<Content> {
     const s3 = new S3();
     const uploadResult = await s3
       .upload({
         Bucket: this.configService.get<string>('AWS_BUCKET'),
         ACL: 'public-read',
         Body: dataBuffer,
-        Key: `${uuidv4()}-${filename}`,
+        Key: `${schemaName}/${uuidv4()}-${filename}`,
       })
       .promise();
 
