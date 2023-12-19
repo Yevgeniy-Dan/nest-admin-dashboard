@@ -1,0 +1,2 @@
+export const REFRESH_TOKEN_LIFESPAN = 7;
+export const ACCESS_TOKEN_LIFESPAN = 1;
