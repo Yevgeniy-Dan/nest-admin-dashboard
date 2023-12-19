@@ -82,7 +82,7 @@ export class PostsController {
   @ApiNotFoundResponse({ description: 'Post not found.' })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getPost(@Body() { id }: ParamsWithIdDto): Promise<PostSchema | Error> {
+  async getPost(@Body() { id }: ParamsWithIdDto): Promise<PostSchema> {
     return this.postService.findOne(id);
   }
 
@@ -103,7 +103,7 @@ export class PostsController {
   @ApiNotFoundResponse({ description: 'Posts not found.' })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getAllPosts(@Req() req): Promise<PostSchema[] | Error> {
+  async getAllPosts(@Req() req): Promise<PostSchema[]> {
     return await this.postService.findAll(req.user.userId);
   }
 
@@ -127,7 +127,7 @@ export class PostsController {
   async createPost(
     @Req() req,
     @Body() post: CreatePostDto,
-  ): Promise<PostSchema | Error> {
+  ): Promise<PostSchema> {
     return await this.postService.create(req.user.userId, post);
   }
 
@@ -153,7 +153,7 @@ export class PostsController {
     @Req() req,
     @Param() { id }: ParamsWithIdDto,
     @Body() post: UpdatePostDto,
-  ): Promise<PostSchema | Error> {
+  ): Promise<PostSchema> {
     return await this.postService.update(req.user.userId, id, post);
   }
 
@@ -167,7 +167,7 @@ export class PostsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async deletePost(@Param() { id }: ParamsWithIdDto): Promise<void | Error> {
+  async deletePost(@Param() { id }: ParamsWithIdDto): Promise<void> {
     return await this.postService.delete(id);
   }
 
@@ -202,15 +202,11 @@ export class PostsController {
       }),
     )
     file: Express.Multer.File,
-  ): Promise<Content | Error> {
-    try {
-      if (!file) {
-        return new NotFoundException('You do not attach the post photo');
-      }
-
-      return this.postService.addPostPhoto(file.buffer, file.originalname);
-    } catch (error) {
-      return new Error(error);
+  ): Promise<Content> {
+    if (!file) {
+      throw new NotFoundException('You do not attach the post photo');
     }
+
+    return this.postService.addPostPhoto(file.buffer, file.originalname);
   }
 }

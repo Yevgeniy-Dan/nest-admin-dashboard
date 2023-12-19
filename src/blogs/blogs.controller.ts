@@ -58,7 +58,7 @@ export class BlogsController {
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiBadRequestResponse({ description: 'Invalid blogId  format' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getBlog(@Body() { id }: ParamsWithIdDto): Promise<Blog | Error> {
+  async getBlog(@Body() { id }: ParamsWithIdDto): Promise<Blog> {
     return this.blogService.findOne(id);
   }
 
@@ -85,7 +85,7 @@ export class BlogsController {
   @ApiNotFoundResponse({ description: 'Blogs not found.' })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getAllBlogs(@Req() req): Promise<Blog[] | Error> {
+  async getAllBlogs(@Req() req): Promise<Blog[]> {
     return await this.blogService.findAll(req.user.userId);
   }
 
@@ -106,10 +106,7 @@ export class BlogsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async createBlog(
-    @Req() req,
-    @Body() blog: CreateBlogDto,
-  ): Promise<Blog | Error> {
+  async createBlog(@Req() req, @Body() blog: CreateBlogDto): Promise<Blog> {
     return await this.blogService.create(blog, req.user.userId);
   }
 
@@ -134,13 +131,9 @@ export class BlogsController {
   async updateBlog(
     @Param() { id }: ParamsWithIdDto,
     @Body() blog: UpdateBlogDto,
-  ): Promise<Blog | Error> {
-    try {
-      //TODO: req.user.userId === blog.author
-      return await this.blogService.update(id, blog);
-    } catch (error) {
-      return new Error(error);
-    }
+  ): Promise<Blog> {
+    //TODO: req.user.userId === blog.author
+    return await this.blogService.update(id, blog);
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
@@ -153,7 +146,7 @@ export class BlogsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async deleteBlog(@Param() { id }: ParamsWithIdDto): Promise<void | Error> {
+  async deleteBlog(@Param() { id }: ParamsWithIdDto): Promise<void> {
     //TODO: req.user.userId === blog.author
     return await this.blogService.delete(id);
   }

@@ -21,11 +21,18 @@ export class BlogsService {
    * @param blogId - The unique identifier of the blog to retrieve.
    * @returns A Promise resolving to the found blog if successful, an Error if the blogId format is invalid, or undefined if the blog is not found.
    */
-  async findOne(blogId: string): Promise<Blog | Error | undefined> {
+  async findOne(blogId: string): Promise<Blog> {
     if (!Types.ObjectId.isValid(blogId)) {
-      return new BadRequestException('Invalid blogId  format');
+      throw new BadRequestException('Invalid blogId  format');
     }
-    return await this.blogModel.findById(blogId);
+
+    const blog = await this.blogModel.findById(blogId);
+
+    if (!blog) {
+      throw new NotFoundException('Blog not found');
+    }
+
+    return blog;
   }
 
   /**
@@ -34,7 +41,7 @@ export class BlogsService {
    * @param userId - The unique identifier of the user whose blogs are to be retrieved.
    * @returns A Promise resolving to an array of blogs authored by the specified user, or undefined if no blogs are found.
    */
-  async findAll(userId: string): Promise<Blog[] | undefined> {
+  async findAll(userId: string): Promise<Blog[]> {
     return await this.blogModel.find({
       author: userId,
     });
@@ -47,16 +54,12 @@ export class BlogsService {
    * @param userId - The unique identifier of the user creating the blog post.
    * @returns A Promise resolving to the newly created blog post if successful, or an Error if an exception occurs during the creation process.
    */
-  async create(blog: CreateBlogDto, userId: string): Promise<Blog | Error> {
-    try {
-      const newBlog = new this.blogModel({
-        ...blog,
-        author: userId,
-      });
-      return await newBlog.save();
-    } catch (error) {
-      return new Error(error);
-    }
+  async create(blog: CreateBlogDto, userId: string): Promise<Blog> {
+    const newBlog = new this.blogModel({
+      ...blog,
+      author: userId,
+    });
+    return await newBlog.save();
   }
 
   /**
@@ -66,19 +69,15 @@ export class BlogsService {
    * @param blogData - The data to be updated in the blog post, provided as an UpdateBlogDto.
    * @returns A Promise resolving to the updated blog post if successful, or an Error if an exception occurs during the update process.
    */
-  async update(blogId: string, blogData: UpdateBlogDto): Promise<Blog | Error> {
-    try {
-      const blog = await this.blogModel
-        .findByIdAndUpdate(blogId, {
-          description: blogData.description,
-          title: blogData.title,
-        })
-        .setOptions({ new: true });
+  async update(blogId: string, blogData: UpdateBlogDto): Promise<Blog> {
+    const blog = await this.blogModel
+      .findByIdAndUpdate(blogId, {
+        description: blogData.description,
+        title: blogData.title,
+      })
+      .setOptions({ new: true });
 
-      return blog;
-    } catch (error) {
-      return new Error(error);
-    }
+    return blog;
   }
 
   /**
@@ -87,11 +86,11 @@ export class BlogsService {
    * @param blogId - The unique identifier of the blog post to be deleted.
    * @returns A Promise resolving to void if the deletion is successful, or an Error (NotFoundException) if the blog post is not found.
    */
-  async delete(blogId: string): Promise<void | Error> {
+  async delete(blogId: string): Promise<void> {
     const deletedBlog = await this.blogModel.findByIdAndDelete(blogId);
 
     if (!deletedBlog) {
-      return new NotFoundException();
+      throw new NotFoundException('Blog not found');
     }
   }
 }

@@ -14,6 +14,8 @@ import { BlogsModule } from './blogs/blogs.module';
 import { PostsModule } from './posts/posts.module';
 import { ContentModule } from './content/content.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './filters/exceptions.filter';
 
 @Module({
   imports: [
@@ -44,6 +46,12 @@ import { MulterModule } from '@nestjs/platform-express';
     ContentModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
+  ],
 })
 export class AppModule {}

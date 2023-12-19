@@ -25,34 +25,30 @@ export class UpdateTokensService {
     token: string,
     user: IJwtTokenResponse,
   ): Promise<SignInResponseDto> {
-    try {
-      const { userId } = user;
-      const tokenInDb = await this.authRefreshTokenService.find(userId, token);
+    const { userId } = user;
+    const tokenInDb = await this.authRefreshTokenService.find(userId, token);
 
-      if (!tokenInDb) {
-        throw new Error('Invalid refresh token');
-      }
-
-      const accessToken = this.authAccessTokenService.generate({
-        email: user.email,
-        roles: user.roles,
-        sub: user.userId,
-      });
-
-      const refreshToken = this.authRefreshTokenService.generate({
-        email: user.email,
-        roles: user.roles,
-        sub: user.userId,
-      });
-
-      await this.authRefreshTokenService.save(user.userId, refreshToken);
-      return {
-        accessToken,
-        refreshToken,
-      };
-    } catch (error) {
-      throw new Error('Refresh token updated failed');
+    if (!tokenInDb) {
+      throw new Error('Invalid refresh token');
     }
+
+    const accessToken = this.authAccessTokenService.generate({
+      email: user.email,
+      roles: user.roles,
+      sub: user.userId,
+    });
+
+    const refreshToken = this.authRefreshTokenService.generate({
+      email: user.email,
+      roles: user.roles,
+      sub: user.userId,
+    });
+
+    await this.authRefreshTokenService.save(user.userId, refreshToken);
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 
   /**

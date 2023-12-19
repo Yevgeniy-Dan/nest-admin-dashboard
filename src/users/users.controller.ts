@@ -72,14 +72,8 @@ export class UsersController {
     type: User,
   })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
-  async getUser(@Req() req): Promise<User | Error> {
-    const user = await this.usersService.findOne(req.user.email);
-
-    if (!user) {
-      return new NotFoundException();
-    }
-
-    return user;
+  async getUser(@Req() req): Promise<User> {
+    return await this.usersService.findOne(req.user.email);
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
@@ -99,7 +93,7 @@ export class UsersController {
   async getAllUsers(
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 10,
-  ): Promise<User[] | Error> {
+  ): Promise<User[]> {
     return await this.usersService.findAll(page, pageSize);
   }
 
@@ -113,7 +107,7 @@ export class UsersController {
     type: User,
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-  async createUser(@Body() user: CreateUserDto): Promise<User | Error> {
+  async createUser(@Body() user: CreateUserDto): Promise<User> {
     return await this.signUpService.signup(user);
   }
 
@@ -139,10 +133,10 @@ export class UsersController {
     @Req() req,
     @Param() { id }: ParamsWithIdDto,
     @Body() user: UpdateUserDto,
-  ): Promise<User | Error> {
+  ): Promise<User> {
     try {
       if (req.user.userId !== id) {
-        return new ForbiddenException(
+        throw new ForbiddenException(
           'You do not have permission to update user',
         );
       }
@@ -153,9 +147,9 @@ export class UsersController {
       return await this.usersService.update(id, updatedUser);
     } catch (error) {
       if (error.code === 11000) {
-        return new HttpException('Email is already taken', HttpStatus.CONFLICT);
+        throw new HttpException('Email is already taken', HttpStatus.CONFLICT);
       } else {
-        return new error();
+        throw new Error(error);
       }
     }
   }
@@ -168,7 +162,7 @@ export class UsersController {
     name: 'Authorization',
     description: 'Bearer token',
   })
-  async deleteUser(@Param() { id }: ParamsWithIdDto): Promise<void | Error> {
+  async deleteUser(@Param() { id }: ParamsWithIdDto): Promise<void> {
     return await this.usersService.delete(id);
   }
 
@@ -209,25 +203,19 @@ export class UsersController {
         .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
     )
     file: Express.Multer.File,
-  ): Promise<Content | Error> {
-    try {
-      if (req.user.userId !== id) {
-        return new ForbiddenException(
-          'You do not have permission to update user',
-        );
-      }
-
-      if (!file) {
-        return new NotFoundException('You do not attach the photo');
-      }
-      return this.usersService.addAvatar(
-        req.user.userId,
-        file.buffer,
-        file.originalname,
-      );
-    } catch (error) {
-      return new Error(error);
+  ): Promise<Content> {
+    if (req.user.userId !== id) {
+      throw new ForbiddenException('You do not have permission to update user');
     }
+
+    if (!file) {
+      throw new NotFoundException('You do not attach the photo');
+    }
+    return this.usersService.addAvatar(
+      req.user.userId,
+      file.buffer,
+      file.originalname,
+    );
   }
 
   @Delete('avatar/user/:id')
@@ -254,17 +242,11 @@ export class UsersController {
   async deleteAvatar(
     @Req() req,
     @Param() { id }: ParamsWithIdDto,
-  ): Promise<User | Error> {
-    try {
-      if (req.user.userId !== id) {
-        return new ForbiddenException(
-          'You do not have permission to update user',
-        );
-      }
-
-      return this.usersService.deleteAvatar(req.user.userId);
-    } catch (error) {
-      return new Error(error);
+  ): Promise<User> {
+    if (req.user.userId !== id) {
+      throw new ForbiddenException('You do not have permission to update user');
     }
+
+    return this.usersService.deleteAvatar(req.user.userId);
   }
 }

@@ -23,10 +23,16 @@ export class UsersService {
    * @param email - The email address of the user to retrieve.
    * @returns A Promise resolving to the found user if successful, or undefined if the user is not found.
    */
-  async findOne(email: string): Promise<User | undefined> {
-    return await this.userModel.findOne({
+  async findOne(email: string): Promise<User> {
+    const user = await this.userModel.findOne({
       email,
     });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 
   /**
@@ -70,7 +76,7 @@ export class UsersService {
    * @param userData - The data to be updated in the user, provided as an UpdateUserDto.
    * @returns A Promise resolving to the updated user if successful, or an Error (NotFoundException) if the user is not found.
    */
-  async update(userId: string, userData: UpdateUserDto): Promise<User | Error> {
+  async update(userId: string, userData: UpdateUserDto): Promise<User> {
     const user = await this.userModel
       .findByIdAndUpdate(userId, {
         email: userData.email,
@@ -78,7 +84,7 @@ export class UsersService {
       .setOptions({ new: true });
 
     if (!user) {
-      return new NotFoundException();
+      throw new NotFoundException();
     }
 
     return user;
@@ -90,10 +96,10 @@ export class UsersService {
    * @param userId - The unique identifier of the user to be deleted.
    * @returns A Promise resolving to void if the deletion is successful, or an Error (NotFoundException) if the user is not found.
    */
-  async delete(userId: string): Promise<void | Error> {
+  async delete(userId: string): Promise<void> {
     const deletedUser = await this.userModel.findByIdAndDelete(userId);
     if (!deletedUser) {
-      return new NotFoundException();
+      throw new NotFoundException();
     }
   }
 
@@ -108,38 +114,34 @@ export class UsersService {
     userId: string,
     imageBuffer: Buffer,
     filename: string,
-  ): Promise<Content | Error> {
-    try {
-      // Resize the avatar image using Sharp with the following parameters:
-      // - Target size: 200x200 pixels
-      // - Fit strategy: Keep the aspect ratio and fit the image inside the specified dimensions
-      // - Without enlargement: Prevent enlarging the image if its dimensions are already smaller
-      const resizedAvatarBuffer = await sharp(imageBuffer)
-        .resize(200, 200, {
-          fit: sharp.fit.inside,
-          withoutEnlargement: true,
-        })
-        .toBuffer();
+  ): Promise<Content> {
+    // Resize the avatar image using Sharp with the following parameters:
+    // - Target size: 200x200 pixels
+    // - Fit strategy: Keep the aspect ratio and fit the image inside the specified dimensions
+    // - Without enlargement: Prevent enlarging the image if its dimensions are already smaller
+    const resizedAvatarBuffer = await sharp(imageBuffer)
+      .resize(200, 200, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true,
+      })
+      .toBuffer();
 
-      const avatar = await this.contentService.upload(
-        'avatars',
-        resizedAvatarBuffer,
-        filename,
-      );
-      const user = await this.userModel
-        .findByIdAndUpdate(userId, {
-          avatar,
-        })
-        .setOptions({ new: true });
+    const avatar = await this.contentService.upload(
+      'avatars',
+      resizedAvatarBuffer,
+      filename,
+    );
+    const user = await this.userModel
+      .findByIdAndUpdate(userId, {
+        avatar,
+      })
+      .setOptions({ new: true });
 
-      if (!user) {
-        return new NotFoundException();
-      }
-
-      return avatar;
-    } catch (error) {
-      return new Error('Failed to add avatar');
+    if (!user) {
+      throw new NotFoundException();
     }
+
+    return avatar;
   }
 
   /**
@@ -148,7 +150,7 @@ export class UsersService {
    * @param userId - The ID of the user.
    * @returns A Promise resolving to the updated user without the avatar or an Error if the avatar or user is not found.
    */
-  async deleteAvatar(userId: string): Promise<User | Error> {
+  async deleteAvatar(userId: string): Promise<User> {
     const user = await this.userModel.findById(userId);
     const { _id: fileId } = user.avatar as ContentDocument;
 
@@ -162,6 +164,6 @@ export class UsersService {
       return user;
     }
 
-    return new NotFoundException();
+    throw new NotFoundException();
   }
 }
