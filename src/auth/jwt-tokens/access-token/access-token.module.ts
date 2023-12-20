@@ -5,7 +5,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { UsersModule } from 'src/users/users.module';
 import { AccessTokenService } from './access-token.service';
-import { Configuration } from 'src/interfaces/configuration.interface';
+import { IConfiguration } from 'src/interfaces/configuration.interface';
 
 import { ACCESS_TOKEN_LIFESPAN } from 'src/constants';
 
@@ -15,7 +15,7 @@ import { ACCESS_TOKEN_LIFESPAN } from 'src/constants';
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService<Configuration>) => ({
+      useFactory: async (configService: ConfigService<IConfiguration>) => ({
         secret: configService.get<string>('JWT_ACCESS_KEY'),
         signOptions: { expiresIn: `${ACCESS_TOKEN_LIFESPAN}h` },
       }),

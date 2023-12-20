@@ -26,7 +26,8 @@ export class SignOutController {
   @Post()
   @ApiOperation({
     summary: 'User sign-out',
-    description: "This endpoint requires the use of cookie named 'refreshToken",
+    description:
+      "This endpoint requires the use of cookie named 'refreshToken'",
   })
   @ApiCreatedResponse({
     description: 'User successfully signed out',

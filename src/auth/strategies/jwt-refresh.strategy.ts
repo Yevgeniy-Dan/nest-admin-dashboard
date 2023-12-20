@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { Configuration } from 'src/interfaces/configuration.interface';
+import { IConfiguration } from 'src/interfaces/configuration.interface';
 import {
   IJwtPayload,
   IJwtTokenResponse,
@@ -14,7 +14,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh',
 ) {
-  constructor(private configService: ConfigService<Configuration>) {
+  constructor(private configService: ConfigService<IConfiguration>) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => request?.cookies?.refreshToken,

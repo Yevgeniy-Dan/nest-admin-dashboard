@@ -160,7 +160,6 @@ export class UsersService {
       await user.save();
       await this.contentService.delete(fileId.toString());
 
-      console.log(user);
       return user;
     }
 

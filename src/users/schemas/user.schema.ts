@@ -51,6 +51,9 @@ export class User {
     ref: 'Content',
   })
   avatar?: Content;
+
+  @Prop({ type: String, required: false })
+  resetPasswordToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

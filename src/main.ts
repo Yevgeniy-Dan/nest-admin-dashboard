@@ -8,7 +8,7 @@ import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 
 import { config } from 'aws-sdk';
-import { Configuration } from './interfaces/configuration.interface';
+import { IConfiguration } from './interfaces/configuration.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -30,7 +30,7 @@ async function bootstrap() {
   );
   app.use(cookieParser());
 
-  const configService: ConfigService<Configuration> = app.get(ConfigService);
+  const configService: ConfigService<IConfiguration> = app.get(ConfigService);
 
   config.update({
     credentials: {

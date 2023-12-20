@@ -31,8 +31,7 @@ export class UpdateTokensController {
   @Post()
   @ApiOperation({
     summary: 'Refresh tokens using refresh token',
-    description:
-      "This endpoint requires the use of cookie named 'refreshToken' for authentication",
+    description: `This endpoint requires the use of cookie named 'refreshToken' for authentication`,
   })
   @ApiOkResponse({
     description: 'The token key pair was successfully updated',

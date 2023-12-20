@@ -4,7 +4,7 @@ import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { Configuration } from 'src/interfaces/configuration.interface';
+import { IConfiguration } from 'src/interfaces/configuration.interface';
 import { RefreshTokenService } from './refresh-token.service';
 
 import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
@@ -15,7 +15,7 @@ import { REFRESH_TOKEN_LIFESPAN } from 'src/constants';
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService<Configuration>) => ({
+      useFactory: async (configService: ConfigService<IConfiguration>) => ({
         secret: configService.get<string>('JWT_REFRESH_KEY'),
         signOptions: { expiresIn: `${REFRESH_TOKEN_LIFESPAN}d` },
       }),

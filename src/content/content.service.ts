@@ -8,13 +8,13 @@ import { S3 } from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Content } from './schemas/content.schema';
-import { Configuration } from 'src/interfaces/configuration.interface';
+import { IConfiguration } from 'src/interfaces/configuration.interface';
 
 @Injectable()
 export class ContentService {
   constructor(
     @InjectModel(Content.name) private readonly contentModel: Model<Content>,
-    private readonly configService: ConfigService<Configuration>,
+    private readonly configService: ConfigService<IConfiguration>,
   ) {}
 
   async findOne(contentId: string): Promise<Content> {

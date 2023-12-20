@@ -19,28 +19,34 @@ import { JwtAccessStrategy } from './strategies/jwt-access.strategy';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { SignOutService } from './sign-out/sign-out.service';
 import { SignOutController } from './sign-out/sign-out.controller';
+import { ResetPasswordController } from './reset-password/reset-password.controller';
+import { ResetPasswordService } from './reset-password/reset-password.service';
+import { MailModule } from 'src/mail/mail.module';
 
 @Module({
   imports: [
-    UsersModule,
-    PassportModule,
     AuthAccessTokenModule,
     AuthRefreshTokenModule,
+    PassportModule,
+    MailModule,
+    UsersModule,
   ],
   controllers: [
     SignUpController,
     SignInController,
     SignOutController,
+    ResetPasswordController,
     UpdateTokensController,
   ],
   providers: [
+    AuthService,
+    JwtAccessStrategy,
+    JwtRefreshStrategy,
+    LocalStrategy,
+    ResetPasswordService,
     SignUpService,
     SignInService,
     SignOutService,
-    AuthService,
-    LocalStrategy,
-    JwtAccessStrategy,
-    JwtRefreshStrategy,
     UpdateTokensService,
   ],
 })

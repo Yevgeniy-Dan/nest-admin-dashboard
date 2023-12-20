@@ -36,7 +36,6 @@ export class SignUpService {
 
     //Assign default user role
     const { _id } = await this.rolesService.findOne(Role.User);
-    console.log(_id);
     //TODO: assign default 'User' role
     return await this.usersService.create(
       {
