@@ -1,10 +1,4 @@
 import { Controller, Delete, Param, UseGuards } from '@nestjs/common';
-import { ContentService } from './content.service';
-import { JwtAccessAuthGuard } from 'src/auth/guards/jwt-access.guard';
-import { RolesGuard } from 'src/roles/guards/roles.guard';
-import { Roles } from 'src/roles/decorators/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
-import { ParamsWithIdDto } from 'src/users/dtos/params-with-id.dto';
 import {
   ApiBearerAuth,
   ApiHeader,
@@ -15,11 +9,21 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
+import { S3Service } from 'src/s3/s3.service';
+
+import { JwtAccessAuthGuard } from 'src/auth/guards/jwt-access.guard';
+import { RolesGuard } from 'src/roles/guards/roles.guard';
+
+import { Roles } from 'src/roles/decorators/roles.decorator';
+
+import { Role } from 'src/roles/enums/role.enum';
+import { ParamsWithIdDto } from 'src/users/dtos/params-with-id.dto';
+
 @ApiTags('Content')
 @ApiBearerAuth()
 @Controller()
 export class ContentController {
-  constructor(private contentService: ContentService) {}
+  constructor(private s3Service: S3Service) {}
 
   @Delete('delete/content/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
@@ -33,6 +37,6 @@ export class ContentController {
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiOkResponse({ description: 'Content is successfully deleted.' })
   async deleteContent(@Param() { id }: ParamsWithIdDto): Promise<void> {
-    return await this.contentService.delete(id);
+    return await this.s3Service.delete(id);
   }
 }

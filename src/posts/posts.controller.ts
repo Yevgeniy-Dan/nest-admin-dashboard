@@ -46,7 +46,7 @@ import { FileTypeValidationPipe } from 'src/pipes/file-type-validation.pipe';
  * cannot exist without media. Therefore, the process of creating a post from
  * the client side is as follows.
  *
- * The client uploads media to storage c3 using the 'media/post' route.
+ * The client uploads media to storage s3 using the 'media/post' route.
  * Afterwards, it receives the Content entity and creates a post along the
  * 'create/post' route with the corresponding DTO.
  *

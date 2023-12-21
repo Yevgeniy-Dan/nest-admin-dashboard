@@ -13,14 +13,15 @@ import { Content, ContentDocument } from 'src/content/schemas/content.schema';
 
 import * as sharp from 'sharp';
 import * as path from 'path';
-import { ContentService } from 'src/content/content.service';
+import { UserDocument } from 'src/users/schemas/user.schema';
+import { S3Service } from 'src/s3/s3.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private readonly postModel: Model<Post>,
     @InjectModel(Blog.name) private readonly blogModel: Model<Blog>,
-    private contentService: ContentService,
+    private s3Service: S3Service,
   ) {}
 
   /**
@@ -60,12 +61,16 @@ export class PostsService {
    * @returns A Promise resolving to the newly created post if successful.
    */
   async create(userId: string, post: CreatePostDto): Promise<Post> {
-    const existingBlog = await this.blogModel.findById(post.blogId);
+    const existingBlog = await this.blogModel
+      .findById(post.blogId)
+      .populate('author');
     if (!existingBlog) {
       throw new NotFoundException('Blog not found');
     }
 
-    if (existingBlog._id.toString() !== userId) {
+    const blogAuthor = existingBlog.author as UserDocument;
+
+    if (blogAuthor._id.toString() !== userId) {
       throw new ForbiddenException();
     }
 
@@ -116,15 +121,15 @@ export class PostsService {
       await existingBlog.save();
     }
 
+    //Delete post media from the storage before save the other one
+    await this.deletePostMedia(updatedPost.media);
+
     const post = await this.postModel
       .findByIdAndUpdate(postId, {
         title: postData.title,
         media: postData.contentId,
       })
       .setOptions({ new: true });
-
-    //Delete post media from the storage
-    await this.deletePostMedia(post.media);
 
     return post;
   }
@@ -165,7 +170,7 @@ export class PostsService {
     if (isImage) {
       return await this.uploadResizedImage(mediaBuffer, filename);
     } else {
-      return await this.contentService.upload('posts', mediaBuffer, filename);
+      return await this.s3Service.upload('posts', mediaBuffer, filename);
     }
   }
 
@@ -181,11 +186,7 @@ export class PostsService {
     filename: string,
   ): Promise<Content> {
     const resizedPostBuffer = await this.resizeImage(imageBuffer);
-    return await this.contentService.upload(
-      'posts',
-      resizedPostBuffer,
-      filename,
-    );
+    return await this.s3Service.upload('posts', resizedPostBuffer, filename);
   }
 
   /**
@@ -216,6 +217,6 @@ export class PostsService {
   private async deletePostMedia(postMedia: Content): Promise<void> {
     const { _id: fileId } = postMedia as ContentDocument;
 
-    await this.contentService.delete(fileId.toString());
+    await this.s3Service.delete(fileId.toString());
   }
 }

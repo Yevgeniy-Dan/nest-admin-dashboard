@@ -5,8 +5,9 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
 import { User } from './schemas/user.schema';
 import UpdateUserDto from './dtos/user-input.dto';
-import { ContentService } from 'src/content/content.service';
 import { Content, ContentDocument } from 'src/content/schemas/content.schema';
+
+import { S3Service } from 'src/s3/s3.service';
 
 import * as sharp from 'sharp';
 
@@ -14,7 +15,7 @@ import * as sharp from 'sharp';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
-    private contentService: ContentService,
+    private s3Service: S3Service,
   ) {}
 
   /**
@@ -126,7 +127,7 @@ export class UsersService {
       })
       .toBuffer();
 
-    const avatar = await this.contentService.upload(
+    const avatar = await this.s3Service.upload(
       'avatars',
       resizedAvatarBuffer,
       filename,
@@ -161,7 +162,7 @@ export class UsersService {
       user.avatar = null;
 
       await user.save();
-      await this.contentService.delete(fileId.toString());
+      await this.s3Service.delete(fileId.toString());
 
       return user;
     }
