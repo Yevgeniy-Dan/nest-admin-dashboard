@@ -169,6 +169,7 @@ export class PostsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({ description: 'Post is successfully deleted.' })
   async deletePost(@Param() { id }: ParamsWithIdDto): Promise<void> {
     return await this.postService.delete(id);
   }

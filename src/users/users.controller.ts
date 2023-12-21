@@ -165,6 +165,7 @@ export class UsersController {
     name: 'Authorization',
     description: 'Bearer token',
   })
+  @ApiOkResponse({ description: 'User is successfully deleted.' })
   async deleteUser(@Param() { id }: ParamsWithIdDto): Promise<void> {
     return await this.usersService.delete(id);
   }
@@ -237,6 +238,10 @@ export class UsersController {
     description: 'Not Found. User or avatar not found.',
   })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
+  @ApiOkResponse({
+    description: 'Avatar is successfully deleted.',
+    type: User,
+  })
   async deleteAvatar(
     @Req() req: IRequestWithUserPayload,
     @Param() { id }: ParamsWithIdDto,

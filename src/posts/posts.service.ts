@@ -92,7 +92,7 @@ export class PostsService {
     postId: string,
     postData: UpdatePostDto,
   ): Promise<Post> {
-    const updatedPost = await this.postModel.findById(postId);
+    const updatedPost = await this.postModel.findById(postId).populate('media');
 
     if (postData.blogId) {
       const existingBlog = await this.blogModel.findById(postData.blogId);
@@ -124,7 +124,7 @@ export class PostsService {
       .setOptions({ new: true });
 
     //Delete post media from the storage
-    await this.deletePostPhoto(post._id.toString());
+    await this.deletePostMedia(post.media);
 
     return post;
   }
@@ -135,8 +135,9 @@ export class PostsService {
    * @returns Promise<void>
    */
   async delete(postId: string): Promise<void> {
+    const deletedPost = await this.postModel.findById(postId).populate('media');
     //Delete post media from the storage
-    await this.deletePostPhoto(postId);
+    await this.deletePostMedia(deletedPost.media);
 
     //Delete post
     await this.postModel.findByIdAndDelete(postId);
@@ -209,12 +210,11 @@ export class PostsService {
   /**
    * Deletes the media associated with a post.
    *
-   * @param postId - The identifier of the post whose media needs to be deleted.
+   * @param postMedia - The identifier of the post whose media needs to be deleted.
    * @returns A Promise that resolves once the media is successfully deleted.
    */
-  private async deletePostPhoto(postId: string): Promise<void> {
-    const post = await this.postModel.findById(postId);
-    const { _id: fileId } = post.media as ContentDocument;
+  private async deletePostMedia(postMedia: Content): Promise<void> {
+    const { _id: fileId } = postMedia as ContentDocument;
 
     await this.contentService.delete(fileId.toString());
   }

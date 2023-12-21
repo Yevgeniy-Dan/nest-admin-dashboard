@@ -131,6 +131,9 @@ export class UsersService {
       resizedAvatarBuffer,
       filename,
     );
+    //Delete post media from the storage before uploading the new one
+    await this.deleteAvatar(userId);
+
     const user = await this.userModel
       .findByIdAndUpdate(userId, {
         avatar,

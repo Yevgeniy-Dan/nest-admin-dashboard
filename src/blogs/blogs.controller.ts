@@ -150,6 +150,7 @@ export class BlogsController {
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({ description: 'Blog is successfully deleted.' })
   async deleteBlog(@Param() { id }: ParamsWithIdDto): Promise<void> {
     //TODO: req.user.userId === blog.author
     return await this.blogService.delete(id);
