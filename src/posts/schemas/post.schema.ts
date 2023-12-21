@@ -23,7 +23,7 @@ export class Post {
 
   @ApiProperty({
     required: true,
-    description: 'The post photo ref',
+    description: 'The post media ref',
     type: String,
   })
   @Prop({
@@ -31,7 +31,7 @@ export class Post {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Content',
   })
-  photo: Content;
+  media: Content;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

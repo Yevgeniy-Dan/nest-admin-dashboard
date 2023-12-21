@@ -9,8 +9,6 @@ import {
   Post,
   UseGuards,
   UploadedFile,
-  ParseFilePipeBuilder,
-  HttpStatus,
   NotFoundException,
   UseInterceptors,
 } from '@nestjs/common';
@@ -41,20 +39,21 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
+import { FileTypeValidationPipe } from 'src/pipes/file-type-validation.pipe';
 
 /**
  * A short note on creating posts. In the current implementation, posts
  * cannot exist without media. Therefore, the process of creating a post from
  * the client side is as follows.
  *
- * The client uploads media to storage c3 using the 'photo/post' route.
+ * The client uploads media to storage c3 using the 'media/post' route.
  * Afterwards, it receives the Content entity and creates a post along the
  * 'create/post' route with the corresponding DTO.
  *
- * To update a post, he must again upload a photo and only then add a link to
+ * To update a post, he must again upload a media and only then add a link to
  * it through the update method.
  *
- * Thus, he cannot independently delete photos from posts and therefore there
+ * Thus, he cannot independently delete media from posts and therefore there
  * is no separate endpoint for this, unlike uploading and deleting an avatar
  */
 @ApiTags('Posts')
@@ -174,13 +173,13 @@ export class PostsController {
     return await this.postService.delete(id);
   }
 
-  @Post('photo/post')
+  @Post('media/post')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Roles(Role.User)
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
-    summary: 'Upload post photo',
-    description: 'Endpoint to upload a new post photo.',
+    summary: 'Upload post media',
+    description: 'Endpoint to upload a new post media.',
   })
   @ApiHeader({
     name: 'Authorization',
@@ -188,31 +187,24 @@ export class PostsController {
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Post photo file',
+    description: 'Post media file',
     type: 'file',
   })
   @ApiOkResponse({ description: 'Photo successfully uploaded.' })
   @ApiBadRequestResponse({ description: 'Bad Request.' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized.' })
   @ApiNotFoundResponse({
-    description: 'Not Found. You do not attach the post photo.',
+    description: 'Not Found. You do not attach the post media.',
   })
   @ApiInternalServerErrorResponse({ description: 'Internal Server Error.' })
-  async addPostPhoto(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        // .addFileTypeValidator({ fileType: 'jpg' })
-        //   .addFileTypeValidator({ fileType: 'png' })
-        .build({
-          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        }),
-    )
+  async addPostMedia(
+    @UploadedFile(new FileTypeValidationPipe(['.jpg', '.png', '.svg', '.mp4']))
     file: Express.Multer.File,
   ): Promise<Content> {
     if (!file) {
-      throw new NotFoundException('You do not attach the post photo');
+      throw new NotFoundException('You do not attach the post media file');
     }
 
-    return this.postService.addPostPhoto(file.buffer, file.originalname);
+    return this.postService.addPostMedia(file.buffer, file.originalname);
   }
 }

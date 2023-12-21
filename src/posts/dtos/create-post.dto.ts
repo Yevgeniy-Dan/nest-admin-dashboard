@@ -12,7 +12,7 @@ export class CreatePostDto {
   @IsNotEmpty()
   readonly blogId: string;
 
-  @ApiProperty({ required: true, description: 'The ID of the photo url' })
+  @ApiProperty({ required: true, description: 'The ID of the media url' })
   @IsMongoId()
   @IsNotEmpty()
   readonly contentId: string;

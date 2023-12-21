@@ -14,7 +14,7 @@ export class UpdatePostDto {
   @IsNotEmpty()
   readonly blogId?: string;
 
-  @ApiProperty({ required: true, description: 'The ID of the photo url' })
+  @ApiProperty({ required: true, description: 'The ID of the media url' })
   @IsMongoId()
   @IsOptional()
   @IsNotEmpty()

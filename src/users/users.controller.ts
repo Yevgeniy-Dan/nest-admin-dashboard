@@ -15,7 +15,6 @@ import {
   Query,
   UploadedFile,
   NotFoundException,
-  ParseFilePipeBuilder,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -51,6 +50,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Content } from 'src/content/schemas/content.schema';
 import { RolesService } from 'src/roles/roles.service';
 import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
+import { FileTypeValidationPipe } from 'src/pipes/file-type-validation.pipe';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -199,12 +199,7 @@ export class UsersController {
   async addAvatar(
     @Req() req: IRequestWithUserPayload,
     @Param() { id }: ParamsWithIdDto,
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addFileTypeValidator({ fileType: 'jpg' })
-        .addFileTypeValidator({ fileType: 'png' })
-        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
-    )
+    @UploadedFile(new FileTypeValidationPipe(['.jpg', '.png', '.svg']))
     file: Express.Multer.File,
   ): Promise<Content> {
     if (req.user.userId !== id) {

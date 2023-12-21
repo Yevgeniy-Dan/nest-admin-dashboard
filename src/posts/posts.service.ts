@@ -12,6 +12,7 @@ import { Blog } from 'src/blogs/schemas/blog.schema';
 import { Content, ContentDocument } from 'src/content/schemas/content.schema';
 
 import * as sharp from 'sharp';
+import * as path from 'path';
 import { ContentService } from 'src/content/content.service';
 
 @Injectable()
@@ -29,7 +30,7 @@ export class PostsService {
    * @returns A Promise resolving to the found post if successful, an Error if an exception occurs, or undefined if the post is not found.
    */
   async findOne(postId: string): Promise<Post> {
-    const post = await this.postModel.findById(postId).populate('photo', 'url');
+    const post = await this.postModel.findById(postId).populate('media', 'url');
 
     if (!post) {
       throw new NotFoundException('Post not found.');
@@ -49,7 +50,7 @@ export class PostsService {
       .find({
         author: userId,
       })
-      .populate('photo', 'url');
+      .populate('media', 'url');
   }
 
   /**
@@ -70,7 +71,7 @@ export class PostsService {
 
     const newPost = new this.postModel({
       title: post.title,
-      photo: post.contentId,
+      media: post.contentId,
     });
 
     existingBlog.posts.push(newPost._id);
@@ -118,11 +119,11 @@ export class PostsService {
     const post = await this.postModel
       .findByIdAndUpdate(postId, {
         title: postData.title,
-        photo: postData.contentId,
+        media: postData.contentId,
       })
       .setOptions({ new: true });
 
-    //Delete post photo from the storage
+    //Delete post media from the storage
     await this.deletePostPhoto(post._id.toString());
 
     return post;
@@ -134,7 +135,7 @@ export class PostsService {
    * @returns Promise<void>
    */
   async delete(postId: string): Promise<void> {
-    //Delete post photo from the storage
+    //Delete post media from the storage
     await this.deletePostPhoto(postId);
 
     //Delete post
@@ -148,27 +149,72 @@ export class PostsService {
     await blog.save();
   }
 
-  async addPostPhoto(imageBuffer: Buffer, filename: string): Promise<Content> {
-    // Resize the post photo using Sharp with the following parameters:
-    // - Target size: 4096x4096 pixels
-    // - Fit strategy: Keep the aspect ratio and fit the image inside the specified dimensions
-    // - Without enlargement: Prevent enlarging the image if its dimensions are already smaller
-    const resizedPostBuffer = await sharp(imageBuffer)
-      .resize(4096, 4096, {
-        fit: sharp.fit.inside,
-        withoutEnlargement: true,
-      })
-      .toBuffer();
+  /**
+   * Adds media content (image or non-image) to a post.
+   * If the media is an image (JPG, PNG, SVG), it is resized using Sharp before uploading.
+   *
+   * @param mediaBuffer - Buffer containing the media data.
+   * @param filename - The name of the file, including its extension.
+   * @returns A Promise resolving to the uploaded Content.
+   */
+  async addPostMedia(mediaBuffer: Buffer, filename: string): Promise<Content> {
+    const extension = path.extname(filename).toLowerCase();
+    const isImage = ['jpg', 'png', 'svg'].includes(extension);
 
+    if (isImage) {
+      return await this.uploadResizedImage(mediaBuffer, filename);
+    } else {
+      return await this.contentService.upload('posts', mediaBuffer, filename);
+    }
+  }
+
+  /**
+   * Uploads a resized image to the 'posts' content service.
+   *
+   * @param imageBuffer - Buffer containing the original image data.
+   * @param filename - The name of the image file, including its extension.
+   * @returns A Promise resolving to the uploaded Content.
+   */
+  private async uploadResizedImage(
+    imageBuffer: Buffer,
+    filename: string,
+  ): Promise<Content> {
+    const resizedPostBuffer = await this.resizeImage(imageBuffer);
     return await this.contentService.upload(
       'posts',
       resizedPostBuffer,
       filename,
     );
   }
+
+  /**
+   * Resizes an image using Sharp with specified parameters.
+   *
+   * @param imageBuffer - Buffer containing the original image data.
+   * @returns A Promise resolving to the resized image buffer.
+   */
+  private async resizeImage(imageBuffer: Buffer): Promise<Buffer> {
+    // Resize the post media using Sharp with the following parameters:
+    // - Target size: 4096x4096 pixels
+    // - Fit strategy: Keep the aspect ratio and fit the image inside the specified dimensions
+    // - Without enlargement: Prevent enlarging the image if its dimensions are already smaller
+    return await sharp(imageBuffer)
+      .resize(4096, 4096, {
+        fit: sharp.fit.inside,
+        withoutEnlargement: true,
+      })
+      .toBuffer();
+  }
+
+  /**
+   * Deletes the media associated with a post.
+   *
+   * @param postId - The identifier of the post whose media needs to be deleted.
+   * @returns A Promise that resolves once the media is successfully deleted.
+   */
   private async deletePostPhoto(postId: string): Promise<void> {
     const post = await this.postModel.findById(postId);
-    const { _id: fileId } = post.photo as ContentDocument;
+    const { _id: fileId } = post.media as ContentDocument;
 
     await this.contentService.delete(fileId.toString());
   }
