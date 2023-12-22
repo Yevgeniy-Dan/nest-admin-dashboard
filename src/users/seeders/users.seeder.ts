@@ -5,9 +5,13 @@ import { User } from '../schemas/user.schema';
 import { Seeder, DataFactory } from 'nestjs-seeder';
 
 import * as bcrypt from 'bcrypt';
-import { Role as RoleEnum } from 'src/roles/enums/role.enum';
 
 import { Role } from 'src/roles/schemas/role.schema';
+
+enum RoleEnum {
+  User = 'user',
+  Admin = 'admin',
+}
 
 @Injectable()
 export class UsersSeeder implements Seeder {

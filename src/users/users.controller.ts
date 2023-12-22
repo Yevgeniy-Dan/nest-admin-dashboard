@@ -44,13 +44,13 @@ import UpdateUserDto from './dtos/user-input.dto';
 import { SignUpService } from 'src/auth/sign-up/sign-up.service';
 import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
 import { Roles } from 'src/roles/decorators/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
 import { RolesGuard } from 'src/roles/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Content } from 'src/content/schemas/content.schema';
 import { RolesService } from 'src/roles/roles.service';
 import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 import { FileTypeValidationPipe } from 'src/pipes/file-type-validation.pipe';
+import { AssignRoleParamsDto } from './dtos/assign-role.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -81,7 +81,7 @@ export class UsersController {
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
   @Get('users')
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({ summary: 'Get all users' })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'pageSize', type: Number, required: false })
@@ -102,7 +102,7 @@ export class UsersController {
 
   @Post('create/user')
   @UseGuards(RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiBody({ type: CreateUserDto, description: 'User data to create' })
   @ApiCreatedResponse({
@@ -116,7 +116,7 @@ export class UsersController {
 
   @Patch('update/user/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({ summary: 'Update user profile' })
   @ApiHeader({
     name: 'Authorization',
@@ -140,7 +140,7 @@ export class UsersController {
     try {
       const roleNames = await this.rolesService.findByIds(req.user.roles);
 
-      if (req.user.userId === id || roleNames.includes(Role.Admin)) {
+      if (req.user.userId === id || roleNames.includes('admin')) {
         const updatedUser: UpdateUserDto = {
           email: user.email,
         };
@@ -158,7 +158,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
+  @Roles('admin')
   @Delete('delete/user/:id')
   @ApiOperation({ summary: 'Delete user profile' })
   @ApiHeader({
@@ -172,7 +172,7 @@ export class UsersController {
 
   @Post('avatar/user/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Upload user avatar',
@@ -219,7 +219,7 @@ export class UsersController {
 
   @Delete('avatar/user/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Delete user avatar',
     description: 'Endpoint to delete an avatar for a user.',
@@ -251,5 +251,34 @@ export class UsersController {
     }
 
     return this.usersService.deleteAvatar(req.user.userId);
+  }
+
+  @Patch('update/user-assign-role')
+  @UseGuards(JwtAccessAuthGuard, RolesGuard)
+  @Roles('admin')
+  @ApiOperation({ summary: 'Update user role' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token',
+  })
+  @ApiBody({
+    type: AssignRoleParamsDto,
+    description: 'User and role id for updating',
+  })
+  @ApiOkResponse({
+    description: 'User roles in user profile updated successfully',
+    type: User,
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiForbiddenResponse({
+    description: 'You do not have permission to update user roles',
+  })
+  @ApiBadRequestResponse({
+    description: 'User aldready have the role',
+  })
+  async assignRole(
+    @Body() { roleId, userId }: AssignRoleParamsDto,
+  ): Promise<User> {
+    return await this.rolesService.assignRole(roleId, userId);
   }
 }

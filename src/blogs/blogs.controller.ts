@@ -13,13 +13,11 @@ import { Blog } from './schemas/blog.schema';
 import { JwtAccessAuthGuard } from 'src/auth/guards/jwt-access.guard';
 import { RolesGuard } from 'src/roles/guards/roles.guard';
 import { Roles } from 'src/roles/decorators/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dtos/create-blog.dto';
 import { ParamsWithIdDto } from 'src/users/dtos/params-with-id.dto';
 import { UpdateBlogDto } from './dtos/update-blog.dto';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
@@ -41,7 +39,7 @@ export class BlogsController {
   constructor(private blogService: BlogsService) {}
   @Get('blog')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Get a blog by ID',
     description: 'Retrieve a blog by its ID.',
@@ -57,7 +55,6 @@ export class BlogsController {
   })
   @ApiNotFoundResponse({ description: 'Blog not found.' })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-  @ApiBadRequestResponse({ description: 'Invalid blogId  format' })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async getBlog(@Body() { id }: ParamsWithIdDto): Promise<Blog> {
     return this.blogService.findOne(id);
@@ -71,7 +68,7 @@ export class BlogsController {
    */
   @Get('blogs')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Get all blogs',
   })
@@ -92,7 +89,7 @@ export class BlogsController {
 
   @Post('create/blog')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Create blog',
   })
@@ -116,7 +113,7 @@ export class BlogsController {
 
   @Patch('update/blog/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Update blog',
   })
@@ -141,7 +138,7 @@ export class BlogsController {
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @Delete('delete/blog/:id')
   @ApiOperation({ summary: 'Delete blog' })
   @ApiHeader({

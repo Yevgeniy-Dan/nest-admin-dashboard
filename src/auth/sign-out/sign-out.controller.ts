@@ -12,7 +12,6 @@ import { JwtAccessAuthGuard } from '../guards/jwt-access.guard';
 import { SignOutResponseDto } from './dtos/sign-out.dto';
 import { RolesGuard } from 'src/roles/guards/roles.guard';
 import { Roles } from 'src/roles/decorators/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
 import { IRequestWithUserPayload } from 'src/interfaces/request.interface';
 
 @ApiTags('Authentication')
@@ -22,7 +21,7 @@ export class SignOutController {
   constructor(private signoutService: SignOutService) {}
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @Post()
   @ApiOperation({
     summary: 'User sign-out',

@@ -1,11 +1,7 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Blog } from './schemas/blog.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { CreateBlogDto } from './dtos/create-blog.dto';
 import { UpdateBlogDto } from './dtos/update-blog.dto';
 
@@ -22,10 +18,6 @@ export class BlogsService {
    * @returns A Promise resolving to the found blog if successful, an Error if the blogId format is invalid, or undefined if the blog is not found.
    */
   async findOne(blogId: string): Promise<Blog> {
-    if (!Types.ObjectId.isValid(blogId)) {
-      throw new BadRequestException('Invalid blogId  format');
-    }
-
     const blog = await this.blogModel.findById(blogId);
 
     if (!blog) {

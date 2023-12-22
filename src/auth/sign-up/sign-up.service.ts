@@ -6,7 +6,6 @@ import { UsersService } from 'src/users/users.service';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User } from 'src/users/schemas/user.schema';
 import { RolesService } from 'src/roles/roles.service';
-import { Role } from 'src/roles/enums/role.enum';
 
 @Injectable()
 export class SignUpService {
@@ -23,19 +22,20 @@ export class SignUpService {
    * @throws HttpException - If a user with the same email already exists.
    */
   async signup(user: CreateUserDto): Promise<User> {
-    const isExist = await this.usersService.findOne(user.email);
-
-    if (isExist) {
-      throw new HttpException(
-        `User with email ${user.email} already exists.`,
-        500,
-      );
-    }
+    try {
+      const isExist = await this.usersService.findOne(user.email);
+      if (isExist) {
+        throw new HttpException(
+          `User with email ${user.email} already exists.`,
+          500,
+        );
+      }
+    } catch (error) {}
 
     const password = await bcrypt.hash(user.password, 10);
 
     //Assign default user role
-    const { _id } = await this.rolesService.findOne(Role.User);
+    const { _id } = await this.rolesService.findOne('user');
     //TODO: assign default 'User' role
     return await this.usersService.create(
       {

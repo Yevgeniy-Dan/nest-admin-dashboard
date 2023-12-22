@@ -16,7 +16,6 @@ import { RolesGuard } from 'src/roles/guards/roles.guard';
 
 import { Roles } from 'src/roles/decorators/roles.decorator';
 
-import { Role } from 'src/roles/enums/role.enum';
 import { ParamsWithIdDto } from 'src/users/dtos/params-with-id.dto';
 
 @ApiTags('Content')
@@ -27,7 +26,7 @@ export class ContentController {
 
   @Delete('delete/content/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
+  @Roles('admin')
   @ApiOperation({ summary: 'Delete content media' })
   @ApiHeader({
     name: 'Authorization',

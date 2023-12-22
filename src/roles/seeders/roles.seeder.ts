@@ -3,7 +3,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Seeder } from 'nestjs-seeder';
 import { Role } from '../schemas/role.schema';
-import { Role as RoleEnum } from '../enums/role.enum';
+
+enum RoleEnum {
+  User = 'user',
+  Admin = 'admin',
+}
 
 const seedRoles = Object.values(RoleEnum).map((name) => ({
   role: name,

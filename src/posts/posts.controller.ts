@@ -18,7 +18,6 @@ import { Post as PostSchema } from './schemas/post.schema';
 import { JwtAccessAuthGuard } from 'src/auth/guards/jwt-access.guard';
 import { RolesGuard } from 'src/roles/guards/roles.guard';
 import { Roles } from 'src/roles/decorators/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
 import { Content } from 'src/content/schemas/content.schema';
@@ -65,7 +64,7 @@ export class PostsController {
 
   @Get('post')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Get a post by ID',
     description: 'Retrieve a post by its ID.',
@@ -88,7 +87,7 @@ export class PostsController {
 
   @Get('posts')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Get all posts',
   })
@@ -111,7 +110,7 @@ export class PostsController {
 
   @Post('create/post')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Create post',
   })
@@ -135,7 +134,7 @@ export class PostsController {
 
   @Patch('update/post/:id')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @ApiOperation({
     summary: 'Update post',
   })
@@ -160,7 +159,7 @@ export class PostsController {
   }
 
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @Delete('delete/post/:id')
   @ApiOperation({ summary: 'Delete post' })
   @ApiHeader({
@@ -176,7 +175,7 @@ export class PostsController {
 
   @Post('media/post')
   @UseGuards(JwtAccessAuthGuard, RolesGuard)
-  @Roles(Role.User)
+  @Roles('user')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({
     summary: 'Upload post media',
