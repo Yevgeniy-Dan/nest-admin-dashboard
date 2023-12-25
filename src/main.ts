@@ -13,6 +13,8 @@ import { IConfiguration } from './interfaces/configuration.interface';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const port = process.env.PORT || 3000;
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Admin Dashboard')
     .setDescription('The admin dashboard API description')
@@ -40,6 +42,6 @@ async function bootstrap() {
     region: configService.get<string>('AWS_REGION'),
   });
 
-  await app.listen(3000);
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap();
