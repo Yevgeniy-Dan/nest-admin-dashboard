@@ -80,17 +80,11 @@ export class ResetPasswordController {
     const user = await this.resetPasswordService.validateToken(token);
 
     if (user) {
-      return res
-        .cookie('resetPasswordToken', user.resetPasswordToken, {
-          httpOnly: true,
-          maxAge: 3 * 60 * 1000, // 3 minutes
-          secure: true,
-        })
-        .redirect(
-          `${this.configService.get<string>(
-            'CLIENT_ORIGIN',
-          )}/auth/reset-password`, // url for resetting password on the client
-        );
+      return res.redirect(
+        `${this.configService.get<string>(
+          'CLIENT_ORIGIN',
+        )}/auth/reset-password?token=${user.resetPasswordToken}`, // url for resetting password on the client
+      );
     }
   }
 
