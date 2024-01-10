@@ -3,7 +3,10 @@ import * as bcrypt from 'bcrypt';
 
 import { UsersService } from 'src/users/users.service';
 
-import { CreateUserDto } from './dtos/create-user.dto';
+import {
+  CreateUserWithPasswordDto,
+  CreateUserWithoutPasswordDto,
+} from './dtos/create-user.dto';
 import { User } from 'src/users/schemas/user.schema';
 import { RolesService } from 'src/roles/roles.service';
 
@@ -17,11 +20,11 @@ export class SignUpService {
   /**
    * Signs up a new user by creating a user account with the provided data.
    *
-   * @param user - The data of the user to be signed up, provided as a CreateUserDto.
+   * @param user - The data of the user to be signed up, provided as a CreateUserWithPasswordDto.
    * @returns A Promise resolving to the newly created user.
    * @throws HttpException - If a user with the same email already exists.
    */
-  async signup(user: CreateUserDto): Promise<User> {
+  async nativeSignup(user: CreateUserWithPasswordDto): Promise<User> {
     try {
       const isExist = await this.usersService.findOne(user.email);
       if (isExist) {
@@ -41,6 +44,32 @@ export class SignUpService {
       {
         ...user,
         password,
+      },
+      [_id.toString()],
+    );
+  }
+
+  /**
+   * Signs up a new user using social media credentials.
+   *
+   * @param user - The data of the user to be signed up, provided as a CreateUserWithoutPasswordDto.
+   * @returns A Promise resolving to the newly created user or an existing user if the email already exists.
+   */
+  async socialMediaSignup(user: CreateUserWithoutPasswordDto): Promise<User> {
+    try {
+      const isExist = await this.usersService.findOne(user.email);
+
+      if (isExist) {
+        return isExist;
+      }
+    } catch (error) {}
+
+    //Assign default user role
+    const { _id } = await this.rolesService.findOne('user');
+
+    return await this.usersService.create(
+      {
+        ...user,
       },
       [_id.toString()],
     );

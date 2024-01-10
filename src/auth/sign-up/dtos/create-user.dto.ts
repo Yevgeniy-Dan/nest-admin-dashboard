@@ -7,7 +7,7 @@ import {
   Length,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateUserWithPasswordDto {
   @ApiProperty({
     description: 'The user email',
   })
@@ -25,4 +25,12 @@ export class CreateUserDto {
       'password must contain at least one uppercase letter, one lowercase letter, one digit',
   })
   readonly password: string;
+}
+
+export class CreateUserWithoutPasswordDto {
+  @ApiProperty({
+    description: 'The user email',
+  })
+  @IsEmail()
+  readonly email: string;
 }

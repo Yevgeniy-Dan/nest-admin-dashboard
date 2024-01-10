@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
+import {
+  CreateUserWithPasswordDto,
+  CreateUserWithoutPasswordDto,
+} from 'src/auth/sign-up/dtos/create-user.dto';
 import { User } from './schemas/user.schema';
 import UpdateUserDto from './dtos/user-input.dto';
 import { Content, ContentDocument } from 'src/content/schemas/content.schema';
@@ -59,10 +62,13 @@ export class UsersService {
   /**
    * Creates a new user with the provided data.
    *
-   * @param user - The data of the user to be created, provided as a CreateUserDto.
+   * @param user - The data of the user to be created, provided as a CreateUserWithPasswordDto.
    * @returns A Promise resolving to the newly created user.
    */
-  async create(user: CreateUserDto, roles: string[]): Promise<User> {
+  async create(
+    user: CreateUserWithPasswordDto | CreateUserWithoutPasswordDto,
+    roles: string[],
+  ): Promise<User> {
     const newUser = new this.userModel({
       ...user,
       roles,

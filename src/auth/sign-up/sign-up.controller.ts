@@ -8,7 +8,7 @@ import {
 
 import { SignUpService } from './sign-up.service';
 
-import { CreateUserDto } from './dtos/create-user.dto';
+import { CreateUserWithPasswordDto } from './dtos/create-user.dto';
 import { User } from 'src/users/schemas/user.schema';
 import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-serializer.interceptor';
 
@@ -25,7 +25,9 @@ export class SignUpController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  async signup(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.signupService.signup(createUserDto);
+  async signup(
+    @Body() createUserDto: CreateUserWithPasswordDto,
+  ): Promise<User> {
+    return this.signupService.nativeSignup(createUserDto);
   }
 }

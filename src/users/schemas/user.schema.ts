@@ -18,10 +18,10 @@ export class User {
   @Factory((faker) => faker.internet.email())
   email: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   @Exclude({ toPlainOnly: true })
   @Factory((faker) => faker.internet.password())
-  password: string;
+  password?: string;
 
   @Prop({ type: [String], default: [] })
   @Exclude({ toPlainOnly: true })

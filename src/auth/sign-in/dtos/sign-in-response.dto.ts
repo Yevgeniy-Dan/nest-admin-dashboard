@@ -7,3 +7,14 @@ export class SignInResponseDto {
   @ApiProperty()
   refreshToken: string;
 }
+
+export class FacebookSignInResponseDto extends SignInResponseDto {
+  @ApiProperty()
+  facebookAccessToken: string;
+
+  @ApiProperty()
+  email: string;
+
+  @ApiProperty()
+  facebookUserId: string;
+}

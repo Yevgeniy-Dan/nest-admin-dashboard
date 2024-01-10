@@ -1,5 +1,5 @@
 import { UserDocument } from 'src/users/schemas/user.schema';
-import { IJwtTokenResponse } from './token.interface';
+import { IFacebookPayload, IJwtTokenResponse } from './token.interface';
 
 export interface IRequestWithUserPayload {
   user: IJwtTokenResponse;
@@ -7,4 +7,8 @@ export interface IRequestWithUserPayload {
 
 export interface IRequestWithUser {
   user: UserDocument;
+}
+
+export interface IRequestWithFacebookUserPayload {
+  user: IFacebookPayload;
 }

@@ -22,6 +22,7 @@ import { SignOutController } from './sign-out/sign-out.controller';
 import { ResetPasswordController } from './reset-password/reset-password.controller';
 import { ResetPasswordService } from './reset-password/reset-password.service';
 import { MailModule } from 'src/mail/mail.module';
+import { FacebookStrategy } from './strategies/facebook.strategy';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { MailModule } from 'src/mail/mail.module';
     SignInService,
     SignOutService,
     UpdateTokensService,
+    FacebookStrategy,
   ],
 })
 export class AuthModule {}

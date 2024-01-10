@@ -7,6 +7,8 @@ export default () => ({
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
   awsSecretAccesssKey: process.env.AWS_SECRET_ACCESS_KEY,
   multerDest: process.env.MULTER_DEST,
+  facebookAppId: process.env.FACEBOOK_APP_ID,
+  facebookAppSecret: process.env.FACEBOOK_APP_SECRET,
   smtp: {
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,

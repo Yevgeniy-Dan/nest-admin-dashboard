@@ -42,7 +42,7 @@ import MongooseClassSerializerInterceptor from 'src/interceptors/mongoose-class-
 import { ParamsWithIdDto } from './dtos/params-with-id.dto';
 import UpdateUserDto from './dtos/user-input.dto';
 import { SignUpService } from 'src/auth/sign-up/sign-up.service';
-import { CreateUserDto } from 'src/auth/sign-up/dtos/create-user.dto';
+import { CreateUserWithPasswordDto } from 'src/auth/sign-up/dtos/create-user.dto';
 import { Roles } from 'src/roles/decorators/roles.decorator';
 import { RolesGuard } from 'src/roles/guards/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -104,14 +104,17 @@ export class UsersController {
   @UseGuards(RolesGuard)
   @Roles('user')
   @ApiOperation({ summary: 'Create a new user' })
-  @ApiBody({ type: CreateUserDto, description: 'User data to create' })
+  @ApiBody({
+    type: CreateUserWithPasswordDto,
+    description: 'User data to create',
+  })
   @ApiCreatedResponse({
     description: 'User created successfully',
     type: User,
   })
   @ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-  async createUser(@Body() user: CreateUserDto): Promise<User> {
-    return await this.signUpService.signup(user);
+  async createUser(@Body() user: CreateUserWithPasswordDto): Promise<User> {
+    return await this.signUpService.nativeSignup(user);
   }
 
   @Patch('update/user/:id')

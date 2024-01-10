@@ -9,6 +9,8 @@ export interface IConfiguration {
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   MULTER_DEST: string;
+  FACEBOOK_APP_ID: string;
+  FACEBOOK_APP_SECRET: string;
   smtp: ISmtpConfig;
 }
 
