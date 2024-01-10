@@ -30,6 +30,10 @@ async function bootstrap() {
       whitelist: true,
     }),
   );
+  app.enableCors({
+    origin: process.env.CLIENT_ORIGIN,
+    credentials: true,
+  });
   app.use(cookieParser());
 
   const configService: ConfigService<IConfiguration> = app.get(ConfigService);
